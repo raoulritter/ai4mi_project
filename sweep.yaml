@@ -1,0 +1,20 @@
+program: main.py
+method: bayes
+metric:
+  name: val/epoch_dice
+  goal: maximize
+parameters:
+  lr:
+    distribution: log_uniform_values
+    min: 1e-5
+    max: 1e-3
+  warmup_epochs:
+    distribution: int_uniform
+    min: 1
+    max: 10
+  max_epochs:
+    distribution: int_uniform
+    min: 50
+    max: 200
+  dest:
+    value: "results/segthor/${run_id}"

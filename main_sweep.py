@@ -1,71 +1,28 @@
-#!/usr/bin/env python3
-
-# MIT License
-
-# Copyright (c) 2024 Hoel Kervadec
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
+import wandb
 import argparse
-import warnings
-import os
-
-from operator import itemgetter
-from pathlib import Path
-from pprint import pprint
-from shutil import copytree, rmtree
-from typing import Any
-
 import numpy as np
 import torch
 import torch.nn.functional as F
-import wandb
-from torch import Tensor, nn
+from torch import nn, Tensor
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from dotenv import load_dotenv
-
+from pathlib import Path
+from operator import itemgetter
 from dataset import SliceDataset
 from ENet import ENet
 from losses import CrossEntropy
 from ShallowNet import shallowCNN
-from utils import (
-    Dcm,
-    class2one_hot,
-    dice_coef,
-    probs2class,
-    probs2one_hot,
-    save_images,
-    tqdm_,
-)
+from utils import Dcm, class2one_hot, dice_coef, probs2class, probs2one_hot, save_images, tqdm_
+from warmup_cosine_annealing_lr import WarmupCosineAnnealingLR
+import os
+from shutil import rmtree, copytree
 
 datasets_params: dict[str, dict[str, Any]] = {}
-# K for the number of classes
-# Avoids the clases with C (often used for the number of Channel)
 datasets_params["TOY2"] = {"K": 2, "net": shallowCNN, "B": 2}
 datasets_params["SEGTHOR"] = {"K": 5, "net": ENet, "B": 8}
 
-
-def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
-
+def setup(args, lr) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     load_dotenv()
-    # Networks and scheduler
     gpu: bool = (
         args.gpu and torch.backends.mps.is_available() or torch.cuda.is_available()
     )
@@ -80,14 +37,9 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     net.init_weights()
     net.to(device)
 
-    # Learning rate and optimizer
-    lr = 0.0005
     optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
+    scheduler = WarmupCosineAnnealingLR(optimizer, args.warmup_epochs, args.epochs)
 
-    # Cosine decay learning rate scheduler
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
-
-    # Dataset part
     B: int = datasets_params[args.dataset]["B"]
     root_dir = Path("data") / args.dataset
 
@@ -95,7 +47,7 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
         [
             lambda img: img.convert("L"),
             lambda img: np.array(img)[np.newaxis, ...],
-            lambda nd: nd / 255,  # max <= 1
+            lambda nd: nd / 255,
             lambda nd: torch.tensor(nd, dtype=torch.float32),
         ]
     )
@@ -103,14 +55,8 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     gt_transform = transforms.Compose(
         [
             lambda img: np.array(img)[...],
-            # The idea is that the classes are mapped to {0, 255} for binary cases
-            # {0, 85, 170, 255} for 4 classes
-            # {0, 51, 102, 153, 204, 255} for 6 classes
-            # Very sketchy but that works here and that simplifies visualization
-            lambda nd: nd / (255 / (K - 1)) if K != 5 else nd / 63,  # max <= 1
-            lambda nd: torch.tensor(nd, dtype=torch.int64)[
-                None, ...
-            ],  # Add one dimension to simulate batch
+            lambda nd: nd / (255 / (K - 1)) if K != 5 else nd / 63,
+            lambda nd: torch.tensor(nd, dtype=torch.int64)[None, ...],
             lambda t: class2one_hot(t, K=K),
             itemgetter(0),
         ]
@@ -140,11 +86,9 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     args.dest.mkdir(parents=True, exist_ok=True)
 
-    # Initialize wandb
     wandb.init(
         project=os.getenv('WANDB_PROJECT', args.wandb_project),
         entity=os.getenv('WANDB_ENTITY', args.wandb_entity),
-        name=f"{args.dataset}_{args.mode}_lr{lr}_epochs{args.epochs}",
         config={
             "learning_rate": lr,
             "epochs": args.epochs,
@@ -153,25 +97,22 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
             "mode": args.mode,
             "optimizer": "Adam",
             "model": net.__class__.__name__,
+            "warmup_epochs": args.warmup_epochs,
         },
     )
 
     return (net, optimizer, scheduler, device, train_loader, val_loader, K)
 
 def runTraining(args):
-    print(f">>> Setting up to train on {args.dataset} with {args.mode}")
-    net, optimizer, device, train_loader, val_loader, K = setup(args)
+    net, optimizer, scheduler, device, train_loader, val_loader, K = setup(args, args.lr)
 
     if args.mode == "full":
-        loss_fn = CrossEntropy(
-            idk=list(range(K))
-        )  # Supervise both background and foreground
+        loss_fn = CrossEntropy(idk=list(range(K)))
     elif args.mode in ["partial"] and args.dataset in ["SEGTHOR", "SEGTHOR_STUDENTS"]:
-        loss_fn = CrossEntropy(idk=[0, 1, 3, 4])  # Do not supervise the heart (class 2)
+        loss_fn = CrossEntropy(idk=[0, 1, 3, 4])
     else:
         raise ValueError(args.mode, args.dataset)
 
-    # Notice one has the length of the _loader_, and the other one of the _dataset_
     log_loss_tra: Tensor = torch.zeros((args.epochs, len(train_loader)))
     log_dice_tra: Tensor = torch.zeros((args.epochs, len(train_loader.dataset), K))
     log_loss_val: Tensor = torch.zeros((args.epochs, len(val_loader)))
@@ -199,37 +140,29 @@ def runTraining(args):
                     log_loss = log_loss_val
                     log_dice = log_dice_val
 
-            with cm():  # Either dummy context manager, or the torch.no_grad for validation
+            with cm():
                 j = 0
                 tq_iter = tqdm_(enumerate(loader), total=len(loader), desc=desc)
                 for i, data in tq_iter:
                     img = data["images"].to(device)
                     gt = data["gts"].to(device)
 
-                    if opt:  # So only for training
+                    if opt:
                         opt.zero_grad()
 
-                    # Sanity tests to see we loaded and encoded the data correctly
                     assert 0 <= img.min() and img.max() <= 1
                     B, _, W, H = img.shape
 
                     pred_logits = net(img)
-                    pred_probs = F.softmax(
-                        1 * pred_logits, dim=1
-                    )  # 1 is the temperature parameter
+                    pred_probs = F.softmax(1 * pred_logits, dim=1)
 
-                    # Metrics computation, not used for training
                     pred_seg = probs2one_hot(pred_probs)
-                    log_dice[e, j : j + B, :] = dice_coef(
-                        pred_seg, gt
-                    )  # One DSC value per sample and per class
+                    log_dice[e, j : j + B, :] = dice_coef(pred_seg, gt)
 
                     loss = loss_fn(pred_probs, gt)
-                    log_loss[e, i] = (
-                        loss.item()
-                    )  # One loss value per batch (averaged in the loss)
+                    log_loss[e, i] = loss.item()
 
-                    if opt:  # Only for training
+                    if opt:
                         loss.backward()
                         opt.step()
 
@@ -244,8 +177,7 @@ def runTraining(args):
                                 args.dest / f"iter{e:03d}" / m,
                             )
 
-                    j += B  # Keep in mind that _in theory_, each batch might have a different size
-                    # For the DSC average: do not take the background class (0) into account:
+                    j += B
                     postfix_dict: dict[str, str] = {
                         "Dice": f"{log_dice[e, :j, 1:].mean():05.3f}",
                         "Loss": f"{log_loss[e, :i + 1].mean():5.2e}",
@@ -257,7 +189,6 @@ def runTraining(args):
                         }
                     tq_iter.set_postfix(postfix_dict)
 
-                    # Log to wandb
                     if m == "train":
                         wandb.log(
                             {
@@ -266,7 +197,7 @@ def runTraining(args):
                                 "epoch": e,
                             }
                         )
-                    else:  # validation
+                    else:
                         wandb.log(
                             {
                                 "val/loss": loss.item(),
@@ -275,13 +206,13 @@ def runTraining(args):
                             }
                         )
 
-        # Save logs
+        scheduler.step()
+
         np.save(args.dest / "loss_tra.npy", log_loss_tra)
         np.save(args.dest / "dice_tra.npy", log_dice_tra)
         np.save(args.dest / "loss_val.npy", log_loss_val)
         np.save(args.dest / "dice_val.npy", log_dice_val)
 
-        # Log epoch metrics to wandb
         wandb.log(
             {
                 "train/epoch_loss": log_loss_tra[e].mean().item(),
@@ -309,11 +240,9 @@ def runTraining(args):
             torch.save(net, args.dest / "bestmodel.pkl")
             torch.save(net.state_dict(), args.dest / "bestweights.pt")
 
-            # Log best model to wandb
             wandb.log({"best_dice": best_dice, "best_epoch": e})
 
     wandb.finish()
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -345,7 +274,6 @@ def main():
     pprint(args)
 
     runTraining(args)
-
 
 if __name__ == "__main__":
     main()

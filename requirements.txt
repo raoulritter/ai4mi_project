@@ -9,3 +9,5 @@ matplotlib
 pre-commit
 ruff
 isort
+wandb
+python-dotenv
