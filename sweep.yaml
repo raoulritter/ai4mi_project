@@ -1,4 +1,4 @@
-program: main.py
+program: main_sweep.py
 method: bayes
 metric:
   name: val/epoch_dice
@@ -16,5 +16,9 @@ parameters:
     distribution: int_uniform
     min: 50
     max: 200
-  dest:
-    value: "results/segthor/${run_id}"
+command:
+  - ${env}
+  - ${interpreter}
+  - "-O"
+  - ${program}
+  - ${args}

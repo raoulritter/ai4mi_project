@@ -155,8 +155,7 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
             "model": net.__class__.__name__,
         },
     )
-
-    return (net, optimizer, scheduler, device, train_loader, val_loader, K)
+    return (net, optimizer, device, train_loader, val_loader, K)
 
 def runTraining(args):
     print(f">>> Setting up to train on {args.dataset} with {args.mode}")

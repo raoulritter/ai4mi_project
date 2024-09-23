@@ -1,27 +1,45 @@
-import wandb
 import argparse
+import warnings
+import os
+
+from operator import itemgetter
+from pathlib import Path
+from pprint import pprint
+from shutil import copytree, rmtree
+from typing import Any
+
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch import nn, Tensor
+import wandb
+from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from pathlib import Path
-from operator import itemgetter
+from dotenv import load_dotenv
+
 from dataset import SliceDataset
 from ENet import ENet
 from losses import CrossEntropy
 from ShallowNet import shallowCNN
-from utils import Dcm, class2one_hot, dice_coef, probs2class, probs2one_hot, save_images, tqdm_
+from utils import (
+    Dcm,
+    class2one_hot,
+    dice_coef,
+    probs2class,
+    probs2one_hot,
+    save_images,
+    tqdm_,
+)
+
 from warmup_cosine_annealing_lr import WarmupCosineAnnealingLR
-import os
-from shutil import rmtree, copytree
 
 datasets_params: dict[str, dict[str, Any]] = {}
+# K for the number of classes
+# Avoids the clases with C (often used for the number of Channel)
 datasets_params["TOY2"] = {"K": 2, "net": shallowCNN, "B": 2}
 datasets_params["SEGTHOR"] = {"K": 5, "net": ENet, "B": 8}
 
-def setup(args, lr) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
+def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     load_dotenv()
     gpu: bool = (
         args.gpu and torch.backends.mps.is_available() or torch.cuda.is_available()
@@ -37,7 +55,7 @@ def setup(args, lr) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     net.init_weights()
     net.to(device)
 
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
+    optimizer = torch.optim.Adam(net.parameters(), lr=args.lr, betas=(0.9, 0.999))
     scheduler = WarmupCosineAnnealingLR(optimizer, args.warmup_epochs, args.epochs)
 
     B: int = datasets_params[args.dataset]["B"]
@@ -89,8 +107,9 @@ def setup(args, lr) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     wandb.init(
         project=os.getenv('WANDB_PROJECT', args.wandb_project),
         entity=os.getenv('WANDB_ENTITY', args.wandb_entity),
+        name=f"{args.dataset}_{args.mode}_lr{args.lr}_epochs{args.epochs}_warmup{args.warmup_epochs}",
         config={
-            "learning_rate": lr,
+            "learning_rate": args.lr,
             "epochs": args.epochs,
             "batch_size": B,
             "dataset": args.dataset,
@@ -101,10 +120,20 @@ def setup(args, lr) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
         },
     )
 
+    wandb.run.name = f"{args.dataset}_{args.mode}_lr{args.lr}_epochs{args.epochs}_warmup{args.warmup_epochs}"
+    run_id = wandb.run.name
+
+    wandb.run.save()
+
+    args.dest = Path(f"results/segthor/{run_id}")
+    args.dest.mkdir(parents=True, exist_ok=True)
+
+
     return (net, optimizer, scheduler, device, train_loader, val_loader, K)
 
+
 def runTraining(args):
-    net, optimizer, scheduler, device, train_loader, val_loader, K = setup(args, args.lr)
+    net, optimizer, scheduler, device, train_loader, val_loader, K = setup(args)
 
     if args.mode == "full":
         loss_fn = CrossEntropy(idk=list(range(K)))
@@ -248,16 +277,19 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--epochs", default=200, type=int)
-    parser.add_argument("--dataset", default="TOY2", choices=datasets_params.keys())
+    parser.add_argument("--dataset", default="SEGTHOR", choices=datasets_params.keys())
     parser.add_argument("--mode", default="full", choices=["partial", "full"])
     parser.add_argument(
         "--dest",
         type=Path,
-        required=True,
+        default="results/segthor/default",
         help="Destination directory to save the results (predictions and weights).",
     )
+    parser.add_argument("--lr", type=float, required=True, help="Learning rate")
+    parser.add_argument("--warmup_epochs", type=int, required=True, help="Number of warmup epochs")
+    parser.add_argument("--max_epochs", type=int, required=True, help="Number of maximum epochs")
+    parser.add_argument("--num_workers", type=int, default=16)
 
-    parser.add_argument("--num_workers", type=int, default=5)
     parser.add_argument("--gpu", action="store_true")
     parser.add_argument(
         "--debug",
