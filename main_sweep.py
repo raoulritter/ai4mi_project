@@ -1,7 +1,6 @@
 import argparse
-import warnings
 import os
-
+import warnings
 from operator import itemgetter
 from pathlib import Path
 from pprint import pprint
@@ -11,12 +10,12 @@ from typing import Any
 import numpy as np
 import torch
 import torch.nn.functional as F
-import wandb
+from dotenv import load_dotenv
 from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from dotenv import load_dotenv
 
+import wandb
 from dataset import SliceDataset
 from ENet import ENet
 from losses import CrossEntropy
@@ -30,7 +29,6 @@ from utils import (
     save_images,
     tqdm_,
 )
-
 from warmup_cosine_annealing_lr import WarmupCosineAnnealingLR
 
 datasets_params: dict[str, dict[str, Any]] = {}
@@ -38,6 +36,7 @@ datasets_params: dict[str, dict[str, Any]] = {}
 # Avoids the clases with C (often used for the number of Channel)
 datasets_params["TOY2"] = {"K": 2, "net": shallowCNN, "B": 2}
 datasets_params["SEGTHOR"] = {"K": 5, "net": ENet, "B": 8}
+
 
 def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     load_dotenv()
@@ -105,8 +104,8 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     args.dest.mkdir(parents=True, exist_ok=True)
 
     wandb.init(
-        project=os.getenv('WANDB_PROJECT', args.wandb_project),
-        entity=os.getenv('WANDB_ENTITY', args.wandb_entity),
+        project=os.getenv("WANDB_PROJECT", args.wandb_project),
+        entity=os.getenv("WANDB_ENTITY", args.wandb_entity),
         name=f"{args.dataset}_{args.mode}_lr{args.lr}_epochs{args.epochs}_warmup{args.warmup_epochs}",
         config={
             "learning_rate": args.lr,
@@ -127,7 +126,6 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     args.dest = Path(f"results/segthor/{run_id}")
     args.dest.mkdir(parents=True, exist_ok=True)
-
 
     return (net, optimizer, scheduler, device, train_loader, val_loader, K)
 
@@ -273,6 +271,7 @@ def runTraining(args):
 
     wandb.finish()
 
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -286,8 +285,12 @@ def main():
         help="Destination directory to save the results (predictions and weights).",
     )
     parser.add_argument("--lr", type=float, required=True, help="Learning rate")
-    parser.add_argument("--warmup_epochs", type=int, required=True, help="Number of warmup epochs")
-    parser.add_argument("--max_epochs", type=int, required=True, help="Number of maximum epochs")
+    parser.add_argument(
+        "--warmup_epochs", type=int, required=True, help="Number of warmup epochs"
+    )
+    parser.add_argument(
+        "--max_epochs", type=int, required=True, help="Number of maximum epochs"
+    )
     parser.add_argument("--num_workers", type=int, default=16)
 
     parser.add_argument("--gpu", action="store_true")
@@ -300,12 +303,15 @@ def main():
 
     args = parser.parse_args()
 
-    args.wandb_project = os.getenv('WANDB_PROJECT', 'ai4mi')
-    args.wandb_entity = os.getenv('WANDB_ENTITY', )
+    args.wandb_project = os.getenv("WANDB_PROJECT", "ai4mi")
+    args.wandb_entity = os.getenv(
+        "WANDB_ENTITY",
+    )
 
     pprint(args)
 
     runTraining(args)
+
 
 if __name__ == "__main__":
     main()

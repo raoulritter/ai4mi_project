@@ -23,9 +23,8 @@
 # SOFTWARE.
 
 import argparse
-import warnings
 import os
-
+import warnings
 from operator import itemgetter
 from pathlib import Path
 from pprint import pprint
@@ -35,12 +34,12 @@ from typing import Any
 import numpy as np
 import torch
 import torch.nn.functional as F
-import wandb
+from dotenv import load_dotenv
 from torch import Tensor, nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from dotenv import load_dotenv
 
+import wandb
 from dataset import SliceDataset
 from ENet import ENet
 from losses import CrossEntropy
@@ -63,7 +62,6 @@ datasets_params["SEGTHOR"] = {"K": 5, "net": ENet, "B": 8}
 
 
 def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
-
     load_dotenv()
     # Networks and scheduler
     gpu: bool = (
@@ -83,9 +81,6 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     # Learning rate and optimizer
     lr = 0.0005
     optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
-
-    # Cosine decay learning rate scheduler
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     # Dataset part
     B: int = datasets_params[args.dataset]["B"]
@@ -142,8 +137,8 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     # Initialize wandb
     wandb.init(
-        project=os.getenv('WANDB_PROJECT', args.wandb_project),
-        entity=os.getenv('WANDB_ENTITY', args.wandb_entity),
+        project=os.getenv("WANDB_PROJECT", args.wandb_project),
+        entity=os.getenv("WANDB_ENTITY", args.wandb_entity),
         name=f"{args.dataset}_{args.mode}_lr{lr}_epochs{args.epochs}",
         config={
             "learning_rate": lr,
@@ -156,6 +151,7 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
         },
     )
     return (net, optimizer, device, train_loader, val_loader, K)
+
 
 def runTraining(args):
     print(f">>> Setting up to train on {args.dataset} with {args.mode}")
@@ -338,8 +334,10 @@ def main():
 
     args = parser.parse_args()
 
-    args.wandb_project = os.getenv('WANDB_PROJECT', 'ai4mi')
-    args.wandb_entity = os.getenv('WANDB_ENTITY', )
+    args.wandb_project = os.getenv("WANDB_PROJECT", "ai4mi")
+    args.wandb_entity = os.getenv(
+        "WANDB_ENTITY",
+    )
 
     pprint(args)
 
