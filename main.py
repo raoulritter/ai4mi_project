@@ -50,6 +50,20 @@ from utils import (Dcm,
 
 from losses import (CrossEntropy)
 
+# Imports I have added
+import logging
+import datetime
+import os
+from collections import defaultdict
+import nibabel as nib
+from typing import Dict, List, Tuple
+
+# Post process the NIfTI files
+from post_process.post_process import post_process_nifti_file
+
+# Metrics
+from run_metrics_calculation import calculate_metrics
+
 
 datasets_params: dict[str, dict[str, Any]] = {}
 # K for the number of classes
@@ -201,6 +215,7 @@ def runTraining(args):
 
                     j += B  # Keep in mind that _in theory_, each batch might have a different size
                     # For the DSC average: do not take the background class (0) into account:
+
                     postfix_dict: dict[str, str] = {"Dice": f"{log_dice[e, :j, 1:].mean():05.3f}",
                                                     "Loss": f"{log_loss[e, :i + 1].mean():5.2e}"}
                     if K > 2:
@@ -229,6 +244,80 @@ def runTraining(args):
             torch.save(net, args.dest / "bestmodel.pkl")
             torch.save(net.state_dict(), args.dest / "bestweights.pt")
 
+        # After both training and validation phases are complete for the epoch
+
+        # Calculate mean metrics
+        mean_train_loss = log_loss_tra[e, :].mean().item()
+        mean_val_loss = log_loss_val[e, :].mean().item()
+        mean_train_dice = log_dice_tra[e, :, 1:].mean().item()  # Exclude background class
+        mean_val_dice = log_dice_val[e, :, 1:].mean().item()
+
+        # Log metrics
+        logging.info(f'Epoch {e}')
+        logging.info(f'Training Loss: {mean_train_loss:.4f}')
+        logging.info(f'Validation Loss: {mean_val_loss:.4f}')
+        logging.info(f'Training Dice Coefficient (mean over classes): {mean_train_dice:.4f}')
+        logging.info(f'Validation Dice Coefficient (mean over classes): {mean_val_dice:.4f}')
+
+        # Log per-class Dice scores
+        for k in range(1, K):  # Exclude background class
+            class_train_dice = log_dice_tra[e, :, k].mean().item()
+            class_val_dice = log_dice_val[e, :, k].mean().item()
+
+            logging.info(f'Class {k} Training Dice: {class_train_dice:.4f}')
+            logging.info(f'Class {k} Validation Dice: {class_val_dice:.4f}')
+    
+    # Post-training reconstruction of the raw output from PNG slices to NIfTI files
+    print(">>> Training complete. Reconstructing NIfTI files from the best epoch predictions.")
+    
+    best_folder = args.dest / "best_epoch"
+    png_folder = best_folder / 'val'
+    gt_folder = 'data/segthor_train/train'  # Adjust the path if necessary
+    nifti_output_folder = best_folder / 'nifti'
+
+    reconstruct_nifti(str(png_folder), gt_folder, str(nifti_output_folder))
+
+    # Post-processing of the raw output to "better" (read: smoother) predictions
+    print(">>> Starting post-processing of NIfTI files.")
+
+    post_process_input_folder = str(nifti_output_folder)
+    post_process_output_folder = str(best_folder / 'nifti_post_processed')
+    num_classes = K  # Number of classes including background
+
+    post_process_nifti_files(post_process_input_folder, post_process_output_folder, num_classes)
+    print(">>> Post-processing completed successfully.")
+
+    # Metric Calculation 
+    # Prepare common parameters for metric calculation
+    class_labels = list(range(K))  # [0, 1, 2, 3, 4] for SEGTHOR
+    class_names = {0: 'Background', 1: 'Esophagus', 2: 'Heart', 3: 'Trachea', 4: 'Aorta'}
+
+    # Metric Calculation for Raw Predictions
+    print(">>> Starting metrics calculation for raw predictions.")
+    calculate_metrics(
+        pred_nifti_dir=str(nifti_output_folder),
+        pred_png_dir=str(best_folder / 'val'),
+        gt_nifti_dir=str(gt_folder),
+        gt_png_dir=str(root_dir / 'val' / 'gt'),
+        class_labels=class_labels,
+        class_names=class_names,
+        description='Raw Predictions'
+    )
+
+    # Metric Calculation for Post-Processed Predictions
+    print(">>> Starting metrics calculation for post-processed predictions.")
+    calculate_metrics(
+        pred_nifti_dir=post_process_output_folder,
+        pred_png_dir=str(best_folder / 'val'),  # PNGs are the same
+        gt_nifti_dir=str(gt_folder),
+        gt_png_dir=str(root_dir / 'val' / 'gt'),
+        class_labels=class_labels,
+        class_names=class_names,
+        description='Post-Processed Predictions'
+    )
+
+    # Zip summary file creations
+    # Here
 
 def main():
     parser = argparse.ArgumentParser()
@@ -246,6 +335,23 @@ def main():
                              "to test the logic around epochs and logging easily.")
 
     args = parser.parse_args()
+
+    # Setup logging
+    current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_dir = Path('logging')
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_file = log_dir / f'training_{current_time}.txt'
+
+    # Configure logging
+    logging.basicConfig(filename=log_file,
+                        filemode='w',
+                        format='%(asctime)s - %(message)s',
+                        datefmt='%H:%M:%S',
+                        level=logging.INFO)
+
+    # Log initial arguments
+    logging.info('Starting training with arguments:')
+    logging.info(args)
 
     pprint(args)
 

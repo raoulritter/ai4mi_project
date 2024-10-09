@@ -1,0 +1,524 @@
+Patient Patient_01:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -746.23 HU
+  Median Intensity: -994.00 HU
+  Standard Deviation: 417.73 HU
+  Total Voxels: 60030976
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 28247 (0.0471%)
+------------------------------------------------------------
+
+Patient Patient_02:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 26613.00 HU
+  Mean Intensity: -689.51 HU
+  Median Intensity: -965.00 HU
+  Standard Deviation: 450.99 HU
+  Total Voxels: 64487424
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 72155 (0.1119%)
+------------------------------------------------------------
+
+Patient Patient_03:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 25292.00 HU
+  Mean Intensity: -738.09 HU
+  Median Intensity: -978.00 HU
+  Standard Deviation: 413.40 HU
+  Total Voxels: 38535168
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 37833 (0.0982%)
+------------------------------------------------------------
+
+Patient Patient_04:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 4551.00 HU
+  Mean Intensity: -714.44 HU
+  Median Intensity: -967.00 HU
+  Standard Deviation: 421.32 HU
+  Total Voxels: 41418752
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 29235 (0.0706%)
+------------------------------------------------------------
+
+Patient Patient_05:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -795.65 HU
+  Median Intensity: -996.00 HU
+  Standard Deviation: 405.47 HU
+  Total Voxels: 74448896
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 182270 (0.2448%)
+------------------------------------------------------------
+
+Patient Patient_06:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -741.80 HU
+  Median Intensity: -989.00 HU
+  Standard Deviation: 435.12 HU
+  Total Voxels: 52166656
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 53624 (0.1028%)
+------------------------------------------------------------
+
+Patient Patient_07:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3059.00 HU
+  Mean Intensity: -720.41 HU
+  Median Intensity: -984.00 HU
+  Standard Deviation: 420.73 HU
+  Total Voxels: 46923776
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 9609 (0.0205%)
+------------------------------------------------------------
+
+Patient Patient_08:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -764.88 HU
+  Median Intensity: -993.00 HU
+  Standard Deviation: 415.71 HU
+  Total Voxels: 44826624
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 69383 (0.1548%)
+------------------------------------------------------------
+
+Patient Patient_09:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -779.99 HU
+  Median Intensity: -994.00 HU
+  Standard Deviation: 410.91 HU
+  Total Voxels: 40370176
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 59283 (0.1468%)
+------------------------------------------------------------
+
+Patient Patient_10:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -630.85 HU
+  Median Intensity: -949.00 HU
+  Standard Deviation: 467.69 HU
+  Total Voxels: 42729472
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 45956 (0.1076%)
+------------------------------------------------------------
+
+Patient Patient_11:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 8834.00 HU
+  Mean Intensity: -757.77 HU
+  Median Intensity: -988.00 HU
+  Standard Deviation: 392.55 HU
+  Total Voxels: 47185920
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 9661 (0.0205%)
+------------------------------------------------------------
+
+Patient Patient_12:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -736.70 HU
+  Median Intensity: -994.00 HU
+  Standard Deviation: 430.11 HU
+  Total Voxels: 44826624
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 46634 (0.1040%)
+------------------------------------------------------------
+
+Patient Patient_13:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -692.37 HU
+  Median Intensity: -977.00 HU
+  Standard Deviation: 454.76 HU
+  Total Voxels: 59768832
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 109759 (0.1836%)
+------------------------------------------------------------
+
+Patient Patient_14:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 1892.00 HU
+  Mean Intensity: -778.21 HU
+  Median Intensity: -981.00 HU
+  Standard Deviation: 382.12 HU
+  Total Voxels: 42467328
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 40310 (0.0949%)
+------------------------------------------------------------
+
+Patient Patient_15:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 17762.00 HU
+  Mean Intensity: -727.81 HU
+  Median Intensity: -970.00 HU
+  Standard Deviation: 421.30 HU
+  Total Voxels: 39321600
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 40731 (0.1036%)
+------------------------------------------------------------
+
+Patient Patient_16:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 11362.00 HU
+  Mean Intensity: -620.60 HU
+  Median Intensity: -913.00 HU
+  Standard Deviation: 458.89 HU
+  Total Voxels: 43515904
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 46420 (0.1067%)
+------------------------------------------------------------
+
+Patient Patient_17:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 14614.00 HU
+  Mean Intensity: -817.42 HU
+  Median Intensity: -983.00 HU
+  Standard Deviation: 348.30 HU
+  Total Voxels: 43515904
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 20066 (0.0461%)
+------------------------------------------------------------
+
+Patient Patient_18:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 15566.00 HU
+  Mean Intensity: -680.53 HU
+  Median Intensity: -959.00 HU
+  Standard Deviation: 433.84 HU
+  Total Voxels: 47972352
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 26284 (0.0548%)
+------------------------------------------------------------
+
+Patient Patient_19:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 31743.00 HU
+  Mean Intensity: -790.16 HU
+  Median Intensity: -974.00 HU
+  Standard Deviation: 384.81 HU
+  Total Voxels: 49807360
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 67153 (0.1348%)
+------------------------------------------------------------
+
+Patient Patient_20:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -796.54 HU
+  Median Intensity: -996.00 HU
+  Standard Deviation: 376.78 HU
+  Total Voxels: 54001664
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 41628 (0.0771%)
+------------------------------------------------------------
+
+Patient Patient_21:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 8570.00 HU
+  Mean Intensity: -705.42 HU
+  Median Intensity: -965.00 HU
+  Standard Deviation: 430.59 HU
+  Total Voxels: 41418752
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 43758 (0.1056%)
+------------------------------------------------------------
+
+Patient Patient_22:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 9060.00 HU
+  Mean Intensity: -761.15 HU
+  Median Intensity: -977.00 HU
+  Standard Deviation: 399.40 HU
+  Total Voxels: 47448064
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 16624 (0.0350%)
+------------------------------------------------------------
+
+Patient Patient_23:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 9486.00 HU
+  Mean Intensity: -782.40 HU
+  Median Intensity: -979.00 HU
+  Standard Deviation: 380.46 HU
+  Total Voxels: 40108032
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 27051 (0.0674%)
+------------------------------------------------------------
+
+Patient Patient_24:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 7206.00 HU
+  Mean Intensity: -721.79 HU
+  Median Intensity: -969.00 HU
+  Standard Deviation: 411.69 HU
+  Total Voxels: 44040192
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 17068 (0.0388%)
+------------------------------------------------------------
+
+Patient Patient_25:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 12913.00 HU
+  Mean Intensity: -714.19 HU
+  Median Intensity: -970.00 HU
+  Standard Deviation: 430.48 HU
+  Total Voxels: 39321600
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 29764 (0.0757%)
+------------------------------------------------------------
+
+Patient Patient_26:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -668.45 HU
+  Median Intensity: -957.00 HU
+  Standard Deviation: 442.30 HU
+  Total Voxels: 64749568
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 52109 (0.0805%)
+------------------------------------------------------------
+
+Patient Patient_27:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -721.04 HU
+  Median Intensity: -994.00 HU
+  Standard Deviation: 435.33 HU
+  Total Voxels: 55836672
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 39640 (0.0710%)
+------------------------------------------------------------
+
+Patient Patient_28:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 4321.00 HU
+  Mean Intensity: -542.32 HU
+  Median Intensity: -809.00 HU
+  Standard Deviation: 464.95 HU
+  Total Voxels: 46923776
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 10083 (0.0215%)
+------------------------------------------------------------
+
+Patient Patient_29:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 1778.00 HU
+  Mean Intensity: -645.89 HU
+  Median Intensity: -961.00 HU
+  Standard Deviation: 451.15 HU
+  Total Voxels: 45350912
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 18671 (0.0412%)
+------------------------------------------------------------
+
+Patient Patient_30:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 11830.00 HU
+  Mean Intensity: -745.23 HU
+  Median Intensity: -978.00 HU
+  Standard Deviation: 416.71 HU
+  Total Voxels: 44826624
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 32826 (0.0732%)
+------------------------------------------------------------
+
+Patient Patient_31:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 9494.00 HU
+  Mean Intensity: -742.41 HU
+  Median Intensity: -977.00 HU
+  Standard Deviation: 413.96 HU
+  Total Voxels: 38797312
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 30617 (0.0789%)
+------------------------------------------------------------
+
+Patient Patient_32:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 12649.00 HU
+  Mean Intensity: -664.02 HU
+  Median Intensity: -949.00 HU
+  Standard Deviation: 453.03 HU
+  Total Voxels: 41156608
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 42159 (0.1024%)
+------------------------------------------------------------
+
+Patient Patient_33:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -720.48 HU
+  Median Intensity: -990.00 HU
+  Standard Deviation: 445.28 HU
+  Total Voxels: 68943872
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 215561 (0.3127%)
+------------------------------------------------------------
+
+Patient Patient_34:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 13025.00 HU
+  Mean Intensity: -708.15 HU
+  Median Intensity: -964.00 HU
+  Standard Deviation: 428.16 HU
+  Total Voxels: 50331648
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 39485 (0.0784%)
+------------------------------------------------------------
+
+Patient Patient_35:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -831.32 HU
+  Median Intensity: -998.00 HU
+  Standard Deviation: 346.07 HU
+  Total Voxels: 47448064
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 32692 (0.0689%)
+------------------------------------------------------------
+
+Patient Patient_36:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -694.86 HU
+  Median Intensity: -986.00 HU
+  Standard Deviation: 450.67 HU
+  Total Voxels: 49283072
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 46830 (0.0950%)
+------------------------------------------------------------
+
+Patient Patient_37:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 12080.00 HU
+  Mean Intensity: -637.92 HU
+  Median Intensity: -939.00 HU
+  Standard Deviation: 453.60 HU
+  Total Voxels: 46137344
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 34765 (0.0754%)
+------------------------------------------------------------
+
+Patient Patient_38:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -734.19 HU
+  Median Intensity: -987.00 HU
+  Standard Deviation: 435.67 HU
+  Total Voxels: 41680896
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 38171 (0.0916%)
+------------------------------------------------------------
+
+Patient Patient_39:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 3071.00 HU
+  Mean Intensity: -696.16 HU
+  Median Intensity: -987.00 HU
+  Standard Deviation: 445.81 HU
+  Total Voxels: 59768832
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 92463 (0.1547%)
+------------------------------------------------------------
+
+Patient Patient_40:
+  Min Intensity: -1000.00 HU
+  Max Intensity: 20674.00 HU
+  Mean Intensity: -705.40 HU
+  Median Intensity: -967.00 HU
+  Standard Deviation: 426.01 HU
+  Total Voxels: 53215232
+  Voxels below -1000 HU: 0 (0.0000%)
+  Voxels above 1000 HU: 43156 (0.0811%)
+------------------------------------------------------------
+
+SegTHOR Dataset Intensity Statistics Summary
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient ID   |   Min (HU) |   Max (HU) |   Mean (HU) |   Median (HU) |   Std Dev (HU) |
++==============+============+============+=============+===============+================+
+| Patient_01   |   -1000.00 |    3071.00 |     -746.23 |       -994.00 |         417.73 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_02   |   -1000.00 |   26613.00 |     -689.51 |       -965.00 |         450.99 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_03   |   -1000.00 |   25292.00 |     -738.09 |       -978.00 |         413.40 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_04   |   -1000.00 |    4551.00 |     -714.44 |       -967.00 |         421.32 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_05   |   -1000.00 |    3071.00 |     -795.65 |       -996.00 |         405.47 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_06   |   -1000.00 |    3071.00 |     -741.80 |       -989.00 |         435.12 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_07   |   -1000.00 |    3059.00 |     -720.41 |       -984.00 |         420.73 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_08   |   -1000.00 |    3071.00 |     -764.88 |       -993.00 |         415.71 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_09   |   -1000.00 |    3071.00 |     -779.99 |       -994.00 |         410.91 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_10   |   -1000.00 |    3071.00 |     -630.85 |       -949.00 |         467.69 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_11   |   -1000.00 |    8834.00 |     -757.77 |       -988.00 |         392.55 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_12   |   -1000.00 |    3071.00 |     -736.70 |       -994.00 |         430.11 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_13   |   -1000.00 |    3071.00 |     -692.37 |       -977.00 |         454.76 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_14   |   -1000.00 |    1892.00 |     -778.21 |       -981.00 |         382.12 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_15   |   -1000.00 |   17762.00 |     -727.81 |       -970.00 |         421.30 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_16   |   -1000.00 |   11362.00 |     -620.60 |       -913.00 |         458.89 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_17   |   -1000.00 |   14614.00 |     -817.42 |       -983.00 |         348.30 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_18   |   -1000.00 |   15566.00 |     -680.53 |       -959.00 |         433.84 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_19   |   -1000.00 |   31743.00 |     -790.16 |       -974.00 |         384.81 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_20   |   -1000.00 |    3071.00 |     -796.54 |       -996.00 |         376.78 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_21   |   -1000.00 |    8570.00 |     -705.42 |       -965.00 |         430.59 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_22   |   -1000.00 |    9060.00 |     -761.15 |       -977.00 |         399.40 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_23   |   -1000.00 |    9486.00 |     -782.40 |       -979.00 |         380.46 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_24   |   -1000.00 |    7206.00 |     -721.79 |       -969.00 |         411.69 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_25   |   -1000.00 |   12913.00 |     -714.19 |       -970.00 |         430.48 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_26   |   -1000.00 |    3071.00 |     -668.45 |       -957.00 |         442.30 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_27   |   -1000.00 |    3071.00 |     -721.04 |       -994.00 |         435.33 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_28   |   -1000.00 |    4321.00 |     -542.32 |       -809.00 |         464.95 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_29   |   -1000.00 |    1778.00 |     -645.89 |       -961.00 |         451.15 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_30   |   -1000.00 |   11830.00 |     -745.23 |       -978.00 |         416.71 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_31   |   -1000.00 |    9494.00 |     -742.41 |       -977.00 |         413.96 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_32   |   -1000.00 |   12649.00 |     -664.02 |       -949.00 |         453.03 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_33   |   -1000.00 |    3071.00 |     -720.48 |       -990.00 |         445.28 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_34   |   -1000.00 |   13025.00 |     -708.15 |       -964.00 |         428.16 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_35   |   -1000.00 |    3071.00 |     -831.32 |       -998.00 |         346.07 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_36   |   -1000.00 |    3071.00 |     -694.86 |       -986.00 |         450.67 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_37   |   -1000.00 |   12080.00 |     -637.92 |       -939.00 |         453.60 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_38   |   -1000.00 |    3071.00 |     -734.19 |       -987.00 |         435.67 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_39   |   -1000.00 |    3071.00 |     -696.16 |       -987.00 |         445.81 |
++--------------+------------+------------+-------------+---------------+----------------+
+| Patient_40   |   -1000.00 |   20674.00 |     -705.40 |       -967.00 |         426.01 |
++--------------+------------+------------+-------------+---------------+----------------+

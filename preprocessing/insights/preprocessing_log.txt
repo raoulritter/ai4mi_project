@@ -1,0 +1,240 @@
+2024-10-09 14:24:43,113 - INFO - Processing Patient_01
+2024-10-09 14:24:46,140 - INFO - Applied voxel clipping to Patient_01
+2024-10-09 14:24:46,140 - INFO - Patient_01 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:24:46,141 - INFO - Resampling Patient_01 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:25:01,391 - INFO - Applied intensity normalization to Patient_01
+2024-10-09 14:25:09,368 - INFO - Saved enhanced data for Patient_01
+2024-10-09 14:25:09,426 - INFO - Processing Patient_02
+2024-10-09 14:25:13,284 - INFO - Applied voxel clipping to Patient_02
+2024-10-09 14:25:13,284 - INFO - Patient_02 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:25:13,284 - INFO - No resampling needed for Patient_02
+2024-10-09 14:25:13,830 - INFO - Applied intensity normalization to Patient_02
+2024-10-09 14:25:22,120 - INFO - Saved enhanced data for Patient_02
+2024-10-09 14:25:22,156 - INFO - Processing Patient_03
+2024-10-09 14:25:24,428 - INFO - Applied voxel clipping to Patient_03
+2024-10-09 14:25:24,428 - INFO - Patient_03 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:25:24,428 - INFO - No resampling needed for Patient_03
+2024-10-09 14:25:24,755 - INFO - Applied intensity normalization to Patient_03
+2024-10-09 14:25:29,523 - INFO - Saved enhanced data for Patient_03
+2024-10-09 14:25:29,546 - INFO - Processing Patient_04
+2024-10-09 14:25:32,016 - INFO - Applied voxel clipping to Patient_04
+2024-10-09 14:25:32,017 - INFO - Patient_04 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:25:32,017 - INFO - No resampling needed for Patient_04
+2024-10-09 14:25:32,368 - INFO - Applied intensity normalization to Patient_04
+2024-10-09 14:25:37,593 - INFO - Saved enhanced data for Patient_04
+2024-10-09 14:25:37,617 - INFO - Processing Patient_05
+2024-10-09 14:25:41,289 - INFO - Applied voxel clipping to Patient_05
+2024-10-09 14:25:41,290 - INFO - Patient_05 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:25:41,290 - INFO - Resampling Patient_05 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:26:00,317 - INFO - Applied intensity normalization to Patient_05
+2024-10-09 14:26:10,297 - INFO - Saved enhanced data for Patient_05
+2024-10-09 14:26:10,369 - INFO - Processing Patient_06
+2024-10-09 14:26:13,460 - INFO - Applied voxel clipping to Patient_06
+2024-10-09 14:26:13,460 - INFO - Patient_06 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:26:13,460 - INFO - No resampling needed for Patient_06
+2024-10-09 14:26:13,901 - INFO - Applied intensity normalization to Patient_06
+2024-10-09 14:26:20,264 - INFO - Saved enhanced data for Patient_06
+2024-10-09 14:26:20,294 - INFO - Processing Patient_07
+2024-10-09 14:26:23,098 - INFO - Applied voxel clipping to Patient_07
+2024-10-09 14:26:23,099 - INFO - Patient_07 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:26:23,099 - INFO - Resampling Patient_07 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:26:34,951 - INFO - Applied intensity normalization to Patient_07
+2024-10-09 14:26:43,051 - INFO - Saved enhanced data for Patient_07
+2024-10-09 14:26:43,099 - INFO - Processing Patient_08
+2024-10-09 14:26:45,774 - INFO - Applied voxel clipping to Patient_08
+2024-10-09 14:26:45,775 - INFO - Patient_08 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:26:45,775 - INFO - No resampling needed for Patient_08
+2024-10-09 14:26:46,180 - INFO - Applied intensity normalization to Patient_08
+2024-10-09 14:26:51,867 - INFO - Saved enhanced data for Patient_08
+2024-10-09 14:26:51,894 - INFO - Processing Patient_09
+2024-10-09 14:26:54,265 - INFO - Applied voxel clipping to Patient_09
+2024-10-09 14:26:54,265 - INFO - Patient_09 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:26:54,266 - INFO - No resampling needed for Patient_09
+2024-10-09 14:26:54,611 - INFO - Applied intensity normalization to Patient_09
+2024-10-09 14:26:59,489 - INFO - Saved enhanced data for Patient_09
+2024-10-09 14:26:59,513 - INFO - Processing Patient_10
+2024-10-09 14:27:02,163 - INFO - Applied voxel clipping to Patient_10
+2024-10-09 14:27:02,163 - INFO - Patient_10 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:27:02,164 - INFO - Resampling Patient_10 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:27:12,885 - INFO - Applied intensity normalization to Patient_10
+2024-10-09 14:27:20,907 - INFO - Saved enhanced data for Patient_10
+2024-10-09 14:27:20,950 - INFO - Processing Patient_11
+2024-10-09 14:27:23,687 - INFO - Applied voxel clipping to Patient_11
+2024-10-09 14:27:23,687 - INFO - Patient_11 original spacing: (np.float32(1.269531), np.float32(1.269531), np.float32(2.5))
+2024-10-09 14:27:23,688 - INFO - Resampling Patient_11 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:27:46,821 - INFO - Applied intensity normalization to Patient_11
+2024-10-09 14:28:08,294 - INFO - Saved enhanced data for Patient_11
+2024-10-09 14:28:08,362 - INFO - Processing Patient_12
+2024-10-09 14:28:11,014 - INFO - Applied voxel clipping to Patient_12
+2024-10-09 14:28:11,014 - INFO - Patient_12 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:28:11,014 - INFO - Resampling Patient_12 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:28:22,274 - INFO - Applied intensity normalization to Patient_12
+2024-10-09 14:28:29,802 - INFO - Saved enhanced data for Patient_12
+2024-10-09 14:28:29,846 - INFO - Processing Patient_13
+2024-10-09 14:28:32,928 - INFO - Applied voxel clipping to Patient_13
+2024-10-09 14:28:32,928 - INFO - Patient_13 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:28:32,928 - INFO - Resampling Patient_13 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:28:48,196 - INFO - Applied intensity normalization to Patient_13
+2024-10-09 14:28:56,566 - INFO - Saved enhanced data for Patient_13
+2024-10-09 14:28:56,626 - INFO - Processing Patient_14
+2024-10-09 14:28:59,116 - INFO - Applied voxel clipping to Patient_14
+2024-10-09 14:28:59,116 - INFO - Patient_14 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:28:59,116 - INFO - No resampling needed for Patient_14
+2024-10-09 14:28:59,485 - INFO - Applied intensity normalization to Patient_14
+2024-10-09 14:29:04,738 - INFO - Saved enhanced data for Patient_14
+2024-10-09 14:29:04,763 - INFO - Processing Patient_15
+2024-10-09 14:29:07,132 - INFO - Applied voxel clipping to Patient_15
+2024-10-09 14:29:07,132 - INFO - Patient_15 original spacing: (np.float32(0.896484), np.float32(0.896484), np.float32(2.5))
+2024-10-09 14:29:07,132 - INFO - Resampling Patient_15 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:29:16,807 - INFO - Applied intensity normalization to Patient_15
+2024-10-09 14:29:26,241 - INFO - Saved enhanced data for Patient_15
+2024-10-09 14:29:26,281 - INFO - Processing Patient_16
+2024-10-09 14:29:28,958 - INFO - Applied voxel clipping to Patient_16
+2024-10-09 14:29:28,958 - INFO - Patient_16 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:29:28,958 - INFO - No resampling needed for Patient_16
+2024-10-09 14:29:29,320 - INFO - Applied intensity normalization to Patient_16
+2024-10-09 14:29:34,906 - INFO - Saved enhanced data for Patient_16
+2024-10-09 14:29:34,932 - INFO - Processing Patient_17
+2024-10-09 14:29:37,445 - INFO - Applied voxel clipping to Patient_17
+2024-10-09 14:29:37,445 - INFO - Patient_17 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:29:37,472 - INFO - No resampling needed for Patient_17
+2024-10-09 14:29:37,836 - INFO - Applied intensity normalization to Patient_17
+2024-10-09 14:29:43,262 - INFO - Saved enhanced data for Patient_17
+2024-10-09 14:29:43,288 - INFO - Processing Patient_18
+2024-10-09 14:29:46,188 - INFO - Applied voxel clipping to Patient_18
+2024-10-09 14:29:46,188 - INFO - Patient_18 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:29:46,188 - INFO - No resampling needed for Patient_18
+2024-10-09 14:29:46,586 - INFO - Applied intensity normalization to Patient_18
+2024-10-09 14:29:52,775 - INFO - Saved enhanced data for Patient_18
+2024-10-09 14:29:52,805 - INFO - Processing Patient_19
+2024-10-09 14:29:55,786 - INFO - Applied voxel clipping to Patient_19
+2024-10-09 14:29:55,786 - INFO - Patient_19 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:29:55,814 - INFO - No resampling needed for Patient_19
+2024-10-09 14:29:56,275 - INFO - Applied intensity normalization to Patient_19
+2024-10-09 14:30:02,991 - INFO - Saved enhanced data for Patient_19
+2024-10-09 14:30:03,021 - INFO - Processing Patient_20
+2024-10-09 14:30:06,111 - INFO - Applied voxel clipping to Patient_20
+2024-10-09 14:30:06,111 - INFO - Patient_20 original spacing: (np.float32(1.367188), np.float32(1.367188), np.float32(2.5))
+2024-10-09 14:30:06,111 - INFO - Resampling Patient_20 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:30:35,193 - INFO - Applied intensity normalization to Patient_20
+2024-10-09 14:31:02,532 - INFO - Saved enhanced data for Patient_20
+2024-10-09 14:31:02,619 - INFO - Processing Patient_21
+2024-10-09 14:31:05,105 - INFO - Applied voxel clipping to Patient_21
+2024-10-09 14:31:05,105 - INFO - Patient_21 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:31:05,105 - INFO - No resampling needed for Patient_21
+2024-10-09 14:31:05,448 - INFO - Applied intensity normalization to Patient_21
+2024-10-09 14:31:10,708 - INFO - Saved enhanced data for Patient_21
+2024-10-09 14:31:10,733 - INFO - Processing Patient_22
+2024-10-09 14:31:13,521 - INFO - Applied voxel clipping to Patient_22
+2024-10-09 14:31:13,521 - INFO - Patient_22 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:31:13,522 - INFO - No resampling needed for Patient_22
+2024-10-09 14:31:13,916 - INFO - Applied intensity normalization to Patient_22
+2024-10-09 14:31:19,878 - INFO - Saved enhanced data for Patient_22
+2024-10-09 14:31:19,907 - INFO - Processing Patient_23
+2024-10-09 14:31:22,252 - INFO - Applied voxel clipping to Patient_23
+2024-10-09 14:31:22,253 - INFO - Patient_23 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:31:22,253 - INFO - No resampling needed for Patient_23
+2024-10-09 14:31:22,584 - INFO - Applied intensity normalization to Patient_23
+2024-10-09 14:31:27,656 - INFO - Saved enhanced data for Patient_23
+2024-10-09 14:31:27,681 - INFO - Processing Patient_24
+2024-10-09 14:31:30,309 - INFO - Applied voxel clipping to Patient_24
+2024-10-09 14:31:30,309 - INFO - Patient_24 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:31:30,310 - INFO - No resampling needed for Patient_24
+2024-10-09 14:31:30,674 - INFO - Applied intensity normalization to Patient_24
+2024-10-09 14:31:36,227 - INFO - Saved enhanced data for Patient_24
+2024-10-09 14:31:36,254 - INFO - Processing Patient_25
+2024-10-09 14:31:38,591 - INFO - Applied voxel clipping to Patient_25
+2024-10-09 14:31:38,591 - INFO - Patient_25 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:31:38,591 - INFO - No resampling needed for Patient_25
+2024-10-09 14:31:38,916 - INFO - Applied intensity normalization to Patient_25
+2024-10-09 14:31:43,887 - INFO - Saved enhanced data for Patient_25
+2024-10-09 14:31:43,911 - INFO - Processing Patient_26
+2024-10-09 14:31:47,192 - INFO - Applied voxel clipping to Patient_26
+2024-10-09 14:31:47,192 - INFO - Patient_26 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:31:47,193 - INFO - Resampling Patient_26 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:32:03,483 - INFO - Applied intensity normalization to Patient_26
+2024-10-09 14:32:12,408 - INFO - Saved enhanced data for Patient_26
+2024-10-09 14:32:12,472 - INFO - Processing Patient_27
+2024-10-09 14:32:15,243 - INFO - Applied voxel clipping to Patient_27
+2024-10-09 14:32:15,243 - INFO - Patient_27 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:32:15,271 - INFO - Resampling Patient_27 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:32:29,202 - INFO - Applied intensity normalization to Patient_27
+2024-10-09 14:32:36,694 - INFO - Saved enhanced data for Patient_27
+2024-10-09 14:32:36,750 - INFO - Processing Patient_28
+2024-10-09 14:32:39,678 - INFO - Applied voxel clipping to Patient_28
+2024-10-09 14:32:39,678 - INFO - Patient_28 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:32:39,678 - INFO - No resampling needed for Patient_28
+2024-10-09 14:32:40,066 - INFO - Applied intensity normalization to Patient_28
+2024-10-09 14:32:46,390 - INFO - Saved enhanced data for Patient_28
+2024-10-09 14:32:46,419 - INFO - Processing Patient_29
+2024-10-09 14:32:49,160 - INFO - Applied voxel clipping to Patient_29
+2024-10-09 14:32:49,160 - INFO - Patient_29 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:32:49,160 - INFO - No resampling needed for Patient_29
+2024-10-09 14:32:49,535 - INFO - Applied intensity normalization to Patient_29
+2024-10-09 14:32:55,313 - INFO - Saved enhanced data for Patient_29
+2024-10-09 14:32:55,341 - INFO - Processing Patient_30
+2024-10-09 14:32:57,985 - INFO - Applied voxel clipping to Patient_30
+2024-10-09 14:32:57,985 - INFO - Patient_30 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:32:57,985 - INFO - No resampling needed for Patient_30
+2024-10-09 14:32:58,358 - INFO - Applied intensity normalization to Patient_30
+2024-10-09 14:33:03,952 - INFO - Saved enhanced data for Patient_30
+2024-10-09 14:33:03,980 - INFO - Processing Patient_31
+2024-10-09 14:33:06,269 - INFO - Applied voxel clipping to Patient_31
+2024-10-09 14:33:06,269 - INFO - Patient_31 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:33:06,269 - INFO - No resampling needed for Patient_31
+2024-10-09 14:33:06,591 - INFO - Applied intensity normalization to Patient_31
+2024-10-09 14:33:11,439 - INFO - Saved enhanced data for Patient_31
+2024-10-09 14:33:11,464 - INFO - Processing Patient_32
+2024-10-09 14:33:13,972 - INFO - Applied voxel clipping to Patient_32
+2024-10-09 14:33:13,972 - INFO - Patient_32 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:33:13,972 - INFO - No resampling needed for Patient_32
+2024-10-09 14:33:14,313 - INFO - Applied intensity normalization to Patient_32
+2024-10-09 14:33:19,602 - INFO - Saved enhanced data for Patient_32
+2024-10-09 14:33:19,627 - INFO - Processing Patient_33
+2024-10-09 14:33:23,064 - INFO - Applied voxel clipping to Patient_33
+2024-10-09 14:33:23,064 - INFO - Patient_33 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:33:23,064 - INFO - Resampling Patient_33 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:33:40,423 - INFO - Applied intensity normalization to Patient_33
+2024-10-09 14:33:49,661 - INFO - Saved enhanced data for Patient_33
+2024-10-09 14:33:49,729 - INFO - Processing Patient_34
+2024-10-09 14:33:52,736 - INFO - Applied voxel clipping to Patient_34
+2024-10-09 14:33:52,737 - INFO - Patient_34 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:33:52,737 - INFO - No resampling needed for Patient_34
+2024-10-09 14:33:53,153 - INFO - Applied intensity normalization to Patient_34
+2024-10-09 14:33:59,543 - INFO - Saved enhanced data for Patient_34
+2024-10-09 14:33:59,573 - INFO - Processing Patient_35
+2024-10-09 14:34:01,894 - INFO - Applied voxel clipping to Patient_35
+2024-10-09 14:34:01,894 - INFO - Patient_35 original spacing: (np.float32(1.3671875), np.float32(1.3671875), np.float32(2.0))
+2024-10-09 14:34:01,894 - INFO - Resampling Patient_35 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:34:24,053 - INFO - Applied intensity normalization to Patient_35
+2024-10-09 14:34:37,204 - INFO - Saved enhanced data for Patient_35
+2024-10-09 14:34:37,272 - INFO - Processing Patient_36
+2024-10-09 14:34:39,811 - INFO - Applied voxel clipping to Patient_36
+2024-10-09 14:34:39,811 - INFO - Patient_36 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:34:39,811 - INFO - Resampling Patient_36 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:34:52,034 - INFO - Applied intensity normalization to Patient_36
+2024-10-09 14:34:58,801 - INFO - Saved enhanced data for Patient_36
+2024-10-09 14:34:58,851 - INFO - Processing Patient_37
+2024-10-09 14:35:01,670 - INFO - Applied voxel clipping to Patient_37
+2024-10-09 14:35:01,670 - INFO - Patient_37 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:35:01,670 - INFO - No resampling needed for Patient_37
+2024-10-09 14:35:02,051 - INFO - Applied intensity normalization to Patient_37
+2024-10-09 14:35:07,949 - INFO - Saved enhanced data for Patient_37
+2024-10-09 14:35:07,978 - INFO - Processing Patient_38
+2024-10-09 14:35:10,482 - INFO - Applied voxel clipping to Patient_38
+2024-10-09 14:35:10,482 - INFO - Patient_38 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:35:10,483 - INFO - No resampling needed for Patient_38
+2024-10-09 14:35:10,829 - INFO - Applied intensity normalization to Patient_38
+2024-10-09 14:35:15,967 - INFO - Saved enhanced data for Patient_38
+2024-10-09 14:35:15,993 - INFO - Processing Patient_39
+2024-10-09 14:35:19,027 - INFO - Applied voxel clipping to Patient_39
+2024-10-09 14:35:19,027 - INFO - Patient_39 original spacing: (np.float32(0.9765625), np.float32(0.9765625), np.float32(2.0))
+2024-10-09 14:35:19,027 - INFO - Resampling Patient_39 to target spacing (0.977, 0.977, 2.5)
+2024-10-09 14:35:34,005 - INFO - Applied intensity normalization to Patient_39
+2024-10-09 14:35:42,007 - INFO - Saved enhanced data for Patient_39
+2024-10-09 14:35:42,067 - INFO - Processing Patient_40
+2024-10-09 14:35:45,235 - INFO - Applied voxel clipping to Patient_40
+2024-10-09 14:35:45,235 - INFO - Patient_40 original spacing: (np.float32(0.976562), np.float32(0.976562), np.float32(2.5))
+2024-10-09 14:35:45,252 - INFO - No resampling needed for Patient_40
+2024-10-09 14:35:45,694 - INFO - Applied intensity normalization to Patient_40
+2024-10-09 14:35:52,548 - INFO - Saved enhanced data for Patient_40

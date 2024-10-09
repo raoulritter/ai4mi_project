@@ -41,6 +41,11 @@ def make_dataset(root, subset) -> list[tuple[Path, Path]]:
     images = sorted(img_path.glob("*.png"))
     full_labels = sorted(full_path.glob("*.png"))
 
+    # our new implementation for sorting images ours above was first
+    # Sort images and labels by patient ID and slice index
+    images = sorted(images, key=lambda x: (x.stem.split('_')[1], int(x.stem.split('_')[2])))
+    full_labels = sorted(full_labels, key=lambda x: (x.stem.split('_')[1], int(x.stem.split('_')[2])))
+
     return list(zip(images, full_labels))
 
 
@@ -62,6 +67,29 @@ class SliceDataset(Dataset):
     def __len__(self):
         return len(self.files)
 
+    # Original getitem
+
+    # def __getitem__(self, index) -> dict[str, Union[Tensor, int, str]]:
+    #     img_path, gt_path = self.files[index]
+
+    #     img: Tensor = self.img_transform(Image.open(img_path))
+    #     gt: Tensor = self.gt_transform(Image.open(gt_path))
+
+    #     _, W, H = img.shape
+    #     K, _, _ = gt.shape
+    #     assert gt.shape == (K, W, H)
+
+    #     # Ours added patient ID (also in dict below)
+    #     stem = img_path.stem  # 'Patient_03_0000'
+    #     patient_id = stem.split('_')[1]  # '03
+
+    #     return {"images": img,
+    #             "gts": gt,
+    #             "stems": img_path.stem,
+    #             "patient_id": patient_id}
+
+    # Ours getitem
+
     def __getitem__(self, index) -> dict[str, Union[Tensor, int, str]]:
         img_path, gt_path = self.files[index]
 
@@ -72,6 +100,16 @@ class SliceDataset(Dataset):
         K, _, _ = gt.shape
         assert gt.shape == (K, W, H)
 
-        return {"images": img,
-                "gts": gt,
-                "stems": img_path.stem}
+        # Extract patient ID and slice index
+        stem = img_path.stem  # 'Patient_03_0000'
+        parts = stem.split('_')
+        patient_id = f"{parts[0]}_{parts[1]}"  # 'Patient_03'
+        slice_idx = int(parts[2])  # '0000'
+
+        return {
+            "images": img,
+            "gts": gt,
+            "stems": stem,
+            "patient_id": patient_id,
+            "slice_idx": slice_idx
+        }

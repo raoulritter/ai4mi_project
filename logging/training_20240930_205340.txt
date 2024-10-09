@@ -1,0 +1,15 @@
+20:53:40 - Starting training with arguments:
+20:53:40 - Namespace(epochs=1, dataset='SEGTHOR', mode='full', dest=PosixPath('results/SEGTHOR/ce'), num_workers=5, gpu=True, debug=False)
+21:03:32 - Epoch 0
+21:03:32 - Training Loss: 0.4550
+21:03:32 - Validation Loss: 0.0869
+21:03:32 - Training Dice Coefficient (mean over classes): 0.4354
+21:03:32 - Validation Dice Coefficient (mean over classes): 0.6157
+21:03:32 - Class 1 Training Dice: 0.2921
+21:03:32 - Class 1 Validation Dice: 0.4936
+21:03:32 - Class 2 Training Dice: 0.5872
+21:03:32 - Class 2 Validation Dice: 0.7977
+21:03:32 - Class 3 Training Dice: 0.5290
+21:03:32 - Class 3 Validation Dice: 0.6594
+21:03:32 - Class 4 Training Dice: 0.3334
+21:03:32 - Class 4 Validation Dice: 0.5119
