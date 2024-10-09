@@ -215,9 +215,7 @@ def runTraining(args):
 
                     # Metrics computation, not used for training
                     pred_seg = probs2one_hot(pred_probs)
-                    log_dice[e, j : j + B, :] = dice_coef(
-                        pred_seg, gt
-                    )  # One DSC value per sample and per class
+                    log_dice[e, j:j + B, :] = dice_coef(gt, pred_seg)  # One DSC value per sample and per class
 
                     loss = loss_fn(pred_probs, gt)
                     log_loss[e, i] = (
@@ -332,12 +330,21 @@ def main():
         "to test the logic around epochs and logging easily.",
     )
 
+    parser.add_argument(
+        "--wandb_project",
+        type=str,
+        default="ai4mi",
+        help="Weights & Biases project name",
+    )
+    parser.add_argument(
+        "--wandb_entity",
+        type=str,
+        default="mae-testing",
+        help="Weights & Biases entity (username or team name)",
+    )
+
     args = parser.parse_args()
 
-    args.wandb_project = os.getenv("WANDB_PROJECT", "ai4mi")
-    args.wandb_entity = os.getenv(
-        "WANDB_ENTITY",
-    )
 
     pprint(args)
 
