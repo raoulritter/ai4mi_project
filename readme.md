@@ -66,20 +66,25 @@ To start our experiment and set a **baseline** we run the full network using the
 ```
 python -O main.py --model_name ENet --dataset SEGTHOR --mode full --epochs 25 --dest results/SEGTHOR/ce --gpu
 ```
-
-In the 
+In the table below you can see a brief overview of all the different model settings that have been tested for this research. More details can be found in our paper.
 
 | Settings | ENet     | VM-Unet  | SAM2     |
 |----------|----------|----------|----------|
-| Baseline | <span style="color:green">Task 1 ✔</span>  |  | Data     |
-| Preprocessing | <span style="color:green">Task 1 ✔</span> | <span style="color:green">Task 1 ✔</span> | <span style="color:green">Task 1 ✔</span> |
-| Preprocessing + Augmentation    | <span style="color:green">✔</span> | Data     | Data     |
-| Preprocessing + Tuning    | Data     | Data     | Data     |
-| Preprocessing + Post-processing    | Data     | Data     | Data     |
-| Preprocessing + Augmentation + Post-Processing    | Data     | Data     | Data     |
-| Preprocessing + Augmentation + Tuning   | Data     | Data     | Data     |
-| Preprocessing + Tuning + Post-Processing   | Data     | Data     | Data     |
-| Preprocessing + Augmentation + Tuning + Post-Processing   | Data     | Data     | Data     |
+| Baseline | ✔|  | ✔     | ✔ | 
+| Preprocessing |✔|✔|✔|
+| Preprocessing + Augmentation    | ✔ | ✔    | ✔  |
+| Preprocessing + Tuning    | ✔    |   ✖   |    ✖  |
+| Preprocessing + Post-processing    | ✔     | ✔     | ✔     |
+| Preprocessing + Augmentation + Post-Processing    | ✔     | ✔     | ✔     |
+| Preprocessing + Augmentation + Tuning   | ✔     | ✖     | ✖     |
+| Preprocessing + Tuning + Post-Processing   | ✔     | ✖     | ✖     |
+| Preprocessing + Augmentation + Tuning + Post-Processing   | ✔     | ✖     | ✖     |
+
+### Post-processing
+Since post-processing is a relatively cheap operation, it is included in the standard model training, however both the raw network output and the post-processed output are saved. Metrics calculation is also performed on both outputs in order to be able to compare the two results. In later versions it will be possible to disable post-processing using a post-processing flag.
+
+
+
 
 
 ## Project overview
