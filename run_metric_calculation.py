@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-import os
-import numpy as np
-import nibabel as nib
-import scipy.ndimage as nd
-from tqdm import tqdm
-import logging
-from scipy.spatial import cKDTree
-from collections import defaultdict
-from PIL import Image
 import glob
+import logging
+import os
+from collections import defaultdict
+
+import nibabel as nib
+import numpy as np
+import scipy.ndimage as nd
+from PIL import Image
+from scipy.spatial import cKDTree
+from tqdm import tqdm
+
 
 def load_nifti(file_path):
     """
@@ -18,18 +20,20 @@ def load_nifti(file_path):
     print(f"Loading NIfTI file: {file_path}")
     return nib.load(file_path).get_fdata()
 
+
 def load_png_slice(file_path):
     """
     Load a PNG image as a numpy array.
     """
-    return np.array(Image.open(file_path).convert('L'), dtype=np.uint8)
+    return np.array(Image.open(file_path).convert("L"), dtype=np.uint8)
+
 
 def compute_surface_distances(y_true, y_pred, class_label):
     """
     Compute surface distances for both Hausdorff Distance and ASSD using k-d trees.
     """
-    y_true_class = (y_true == class_label)
-    y_pred_class = (y_pred == class_label)
+    y_true_class = y_true == class_label
+    y_pred_class = y_pred == class_label
 
     if not np.any(y_true_class) and not np.any(y_pred_class):
         return None  # Both masks are empty
@@ -57,6 +61,7 @@ def compute_surface_distances(y_true, y_pred, class_label):
 
     return distances_true_to_pred, distances_pred_to_true
 
+
 def hausdorff_and_assd(y_true, y_pred, class_label):
     """
     Calculate both 95th percentile Hausdorff distance and ASSD for a specific class.
@@ -80,9 +85,12 @@ def hausdorff_and_assd(y_true, y_pred, class_label):
     hd95 = np.percentile(all_distances, 95)
 
     # Calculate ASSD
-    assd_value = (np.mean(distances_true_to_pred) + np.mean(distances_pred_to_true)) / 2.0
+    assd_value = (
+        np.mean(distances_true_to_pred) + np.mean(distances_pred_to_true)
+    ) / 2.0
 
     return hd95, assd_value
+
 
 def calculate_hd_assd_metrics(y_true, y_pred, class_labels):
     """
@@ -91,17 +99,18 @@ def calculate_hd_assd_metrics(y_true, y_pred, class_labels):
     metrics = {}
     for class_label in class_labels[1:]:
         hd95, assd_val = hausdorff_and_assd(y_true, y_pred, class_label)
-        metrics[class_label] = {'HD95': hd95, 'ASSD': assd_val}
+        metrics[class_label] = {"HD95": hd95, "ASSD": assd_val}
     return metrics
+
 
 def dice_coefficient(y_true, y_pred):
     """
     Calculate Dice Coefficient between two boolean masks.
-    
+
     Args:
         y_true (np.ndarray): Ground truth boolean mask.
         y_pred (np.ndarray): Predicted boolean mask.
-    
+
     Returns:
         float: Dice coefficient.
     """
@@ -112,7 +121,7 @@ def dice_coefficient(y_true, y_pred):
     if sum_gt + sum_pred == 0:
         return 1.0  # Both masks are empty; perfect agreement
     else:
-        return (2. * intersection + 1e-8) / (sum_gt + sum_pred + 1e-8)
+        return (2.0 * intersection + 1e-8) / (sum_gt + sum_pred + 1e-8)
 
 
 def calculate_dice_from_pngs(patient_id, gt_png_paths, pred_png_paths, class_labels):
@@ -132,8 +141,8 @@ def calculate_dice_from_pngs(patient_id, gt_png_paths, pred_png_paths, class_lab
             gt_slice = gt_slice // 63
             pred_slice = pred_slice // 63
 
-            y_true_class = (gt_slice == class_label)
-            y_pred_class = (pred_slice == class_label)
+            y_true_class = gt_slice == class_label
+            y_pred_class = pred_slice == class_label
 
             # Dice calculation
             dice_score = dice_coefficient(y_true_class, y_pred_class)
@@ -143,8 +152,9 @@ def calculate_dice_from_pngs(patient_id, gt_png_paths, pred_png_paths, class_lab
 
         # Compute mean Dice for the class
         mean_dice = np.mean(dice_scores)
-        metrics[class_label] = {'2D_Dice': mean_dice}
+        metrics[class_label] = {"2D_Dice": mean_dice}
     return metrics, per_slice_dices
+
 
 def three_d_dice_nifti(y_true, y_pred, class_labels):
     """
@@ -152,8 +162,8 @@ def three_d_dice_nifti(y_true, y_pred, class_labels):
     """
     metrics = {}
     for class_label in class_labels[1:]:
-        y_true_class = (y_true == class_label)
-        y_pred_class = (y_pred == class_label)
+        y_true_class = y_true == class_label
+        y_pred_class = y_pred == class_label
 
         intersection = np.logical_and(y_true_class, y_pred_class).sum()
         sum_gt = y_true_class.sum()
@@ -162,69 +172,89 @@ def three_d_dice_nifti(y_true, y_pred, class_labels):
         if sum_gt + sum_pred == 0:
             dice = 1.0  # Both masks are empty; perfect agreement
         else:
-            dice = (2. * intersection + 1e-8) / (sum_gt + sum_pred + 1e-8)
+            dice = (2.0 * intersection + 1e-8) / (sum_gt + sum_pred + 1e-8)
 
         metrics[class_label] = dice
     return metrics
+
 
 def create_viz_folder():
     """
     Create a folder to store visualizations.
     """
-    viz_folder = 'viz'
+    viz_folder = "viz"
     if not os.path.exists(viz_folder):
         os.makedirs(viz_folder)
     return viz_folder
+
 
 def setup_logging():
     """
     Set up logging to a file.
     """
-    logging.basicConfig(filename='metrics_log2.txt', level=logging.INFO,
-                        format='%(message)s', filemode='w')
+    logging.basicConfig(
+        filename="metrics_log.txt",
+        level=logging.INFO,
+        format="%(message)s",
+        filemode="w",
+    )
 
-def log_metrics(patient_id, dice_metrics, dice_3d_metrics, hd_assd_metrics, class_names):
+
+def log_metrics(
+    patient_id, dice_metrics, dice_3d_metrics, hd_assd_metrics, class_names
+):
     """
     Log the metrics for a patient.
     """
     logging.info(f"Patient: {patient_id}")
     logging.info("-" * 80)
-    header = "{:<15} {:>12} {:>12} {:>12} {:>12}".format("Class", "2D_Dice", "3D_Dice", "HD95", "ASSD")
+    header = "{:<15} {:>12} {:>12} {:>12} {:>12}".format(
+        "Class", "2D_Dice", "3D_Dice", "HD95", "ASSD"
+    )
     logging.info(header)
     for class_label in dice_metrics.keys():
         class_name = class_names.get(class_label, f"Class {class_label}")
-        dice_2d = dice_metrics[class_label]['2D_Dice']
+        dice_2d = dice_metrics[class_label]["2D_Dice"]
         dice_3d = dice_3d_metrics[class_label]
-        hd95 = hd_assd_metrics[class_label]['HD95']
-        assd_val = hd_assd_metrics[class_label]['ASSD']
-        logging.info("{:<15} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f}".format(
-            class_name,
-            dice_2d,
-            dice_3d,
-            hd95 if not np.isinf(hd95) else float('nan'),
-            assd_val if not np.isinf(assd_val) else float('nan')
-        ))
+        hd95 = hd_assd_metrics[class_label]["HD95"]
+        assd_val = hd_assd_metrics[class_label]["ASSD"]
+        logging.info(
+            "{:<15} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f}".format(
+                class_name,
+                dice_2d,
+                dice_3d,
+                hd95 if not np.isinf(hd95) else float("nan"),
+                assd_val if not np.isinf(assd_val) else float("nan"),
+            )
+        )
     # Compute mean metrics for the patient
-    mean_dice_2d = np.mean([m['2D_Dice'] for m in dice_metrics.values()])
+    mean_dice_2d = np.mean([m["2D_Dice"] for m in dice_metrics.values()])
     mean_dice_3d = np.mean(list(dice_3d_metrics.values()))
-    mean_hd95 = np.mean([m['HD95'] for m in hd_assd_metrics.values()])
-    mean_assd = np.mean([m['ASSD'] for m in hd_assd_metrics.values()])
+    mean_hd95 = np.mean([m["HD95"] for m in hd_assd_metrics.values()])
+    mean_assd = np.mean([m["ASSD"] for m in hd_assd_metrics.values()])
 
-    logging.info("{:<15} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f}".format(
-        "Mean",
-        mean_dice_2d,
-        mean_dice_3d,
-        mean_hd95,
-        mean_assd
-    ))
+    logging.info(
+        "{:<15} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f}".format(
+            "Mean", mean_dice_2d, mean_dice_3d, mean_hd95, mean_assd
+        )
+    )
     logging.info("\n")
 
-def calculate_metrics(pred_nifti_dir, pred_png_dir, gt_nifti_dir, gt_png_dir, class_labels, class_names, description):
+
+def calculate_metrics(pred_nifti_dir, pred_png_dir, gt_nifti_dir, gt_png_dir, class_labels, class_names, description, gt_filename):
     """
     Main function to orchestrate the segmentation analysis process.
+
+    Args:
+        pred_nifti_dir (str): Directory containing predicted NIfTI files.
+        pred_png_dir (str): Directory containing predicted PNG slices.
+        gt_nifti_dir (str): Directory containing ground truth NIfTI files.
+        gt_png_dir (str): Directory containing ground truth PNG slices.
+        class_labels (list): List of class labels.
+        class_names (dict): Mapping from class labels to class names.
+        description (str): Description for logging purposes.
+        gt_filename (str): Filename of the ground truth NIfTI file (e.g., 'GT.nii.gz' or 'GT_enhanced.nii.gz').
     """
-    # Remove setup_logging() call
-    # Use logging.info directly, since logging is configured in main.py
 
     logging.info(f"Segmentation Metrics ({description})")
     logging.info("=" * 80)
@@ -242,7 +272,7 @@ def calculate_metrics(pred_nifti_dir, pred_png_dir, gt_nifti_dir, gt_png_dir, cl
     for patient_id in tqdm(patient_ids, desc=f"Processing Patients ({description})"):
         logging.info(f"\nProcessing Patient: {patient_id}")
         pred_nifti_path = os.path.join(pred_nifti_dir, patient_id + '.nii.gz')
-        gt_nifti_path = os.path.join(gt_nifti_dir, patient_id, 'GT.nii.gz')
+        gt_nifti_path = os.path.join(gt_nifti_dir, patient_id, gt_filename)
 
         if not os.path.exists(gt_nifti_path):
             logging.warning(f"Ground truth NIfTI not found for {patient_id}, skipping.")
@@ -308,7 +338,102 @@ def calculate_metrics(pred_nifti_dir, pred_png_dir, gt_nifti_dir, gt_png_dir, cl
     ))
     for class_label in class_labels[1:]:
         class_name = class_names.get(class_label, f"Class {class_label}")
-        # ... [rest of the code as before] ...
+        # 2D Dice (per-slice)
+        dices = all_dice_metrics[class_label]
+        mean_dice_2d = np.mean(dices) if dices else np.nan
+        std_dice_2d = np.std(dices) if dices else np.nan
 
+        # 3D Dice (per-patient)
+        dice_3d = all_dice_3d_metrics[class_label]
+        mean_dice_3d = np.mean(dice_3d) if dice_3d else np.nan
+        std_dice_3d = np.std(dice_3d) if dice_3d else np.nan
+
+        # HD95 and ASSD
+        hd95s = [
+            m["HD95"]
+            for m in all_hd_assd_metrics[class_label]
+            if not np.isinf(m["HD95"]) and not np.isnan(m["HD95"])
+        ]
+        assds = [
+            m["ASSD"]
+            for m in all_hd_assd_metrics[class_label]
+            if not np.isinf(m["ASSD"]) and not np.isnan(m["ASSD"])
+        ]
+        mean_hd95 = np.mean(hd95s) if hd95s else np.nan
+        std_hd95 = np.std(hd95s) if hd95s else np.nan
+        mean_assd = np.mean(assds) if assds else np.nan
+        std_assd = np.std(assds) if assds else np.nan
+
+        logging.info(
+            "{:<15} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f}".format(
+                class_name,
+                mean_dice_2d,
+                std_dice_2d,
+                mean_dice_3d,
+                std_dice_3d,
+                mean_hd95,
+                std_hd95,
+                mean_assd,
+                std_assd,
+            )
+        )
+
+    # Overall mean and standard deviation across all individual scores
+    # Collect all 2D Dice scores
+    all_dice_scores = []
+    for label in class_labels[1:]:
+        all_dice_scores.extend(all_dice_metrics[label])
+    overall_mean_dice = np.nanmean(all_dice_scores)
+    overall_std_dice = np.nanstd(all_dice_scores)
+
+    # Collect all 3D Dice scores
+    all_dice_3d_scores = []
+    for label in class_labels[1:]:
+        all_dice_3d_scores.extend(all_dice_3d_metrics[label])
+    overall_mean_dice_3d = np.nanmean(all_dice_3d_scores)
+    overall_std_dice_3d = np.nanstd(all_dice_3d_scores)
+
+    # Collect all HD95 scores
+    all_hd95_scores = []
+    for label in class_labels[1:]:
+        hd95s = [
+            m["HD95"]
+            for m in all_hd_assd_metrics[label]
+            if not np.isinf(m["HD95"]) and not np.isnan(m["HD95"])
+        ]
+        all_hd95_scores.extend(hd95s)
+    overall_mean_hd95 = np.nanmean(all_hd95_scores)
+    overall_std_hd95 = np.nanstd(all_hd95_scores)
+
+    # Collect all ASSD scores
+    all_assd_scores = []
+    for label in class_labels[1:]:
+        assds = [
+            m["ASSD"]
+            for m in all_hd_assd_metrics[label]
+            if not np.isinf(m["ASSD"]) and not np.isnan(m["ASSD"])
+        ]
+        all_assd_scores.extend(assds)
+    overall_mean_assd = np.nanmean(all_assd_scores)
+    overall_std_assd = np.nanstd(all_assd_scores)
+
+    logging.info(
+        "{:<15} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f} {:>12.4f}".format(
+            "Overall",
+            overall_mean_dice,
+            overall_std_dice,
+            overall_mean_dice_3d,
+            overall_std_dice_3d,
+            overall_mean_hd95,
+            overall_std_hd95,
+            overall_mean_assd,
+            overall_std_assd,
+        )
+    )
     logging.info("=" * 80)
-    logging.info(f"Completed metrics calculation for {description}.")
+
+    print("Processing complete. Metrics logged in 'metrics_log.txt'.")
+
+
+if __name__ == "__main__":
+    main()
