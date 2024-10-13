@@ -58,6 +58,9 @@ from collections import defaultdict
 import nibabel as nib
 from typing import Dict, List, Tuple
 
+# For tuning
+import torch.optim.lr_scheduler as lr_scheduler
+
 # Post process the NIfTI files
 from post_process.post_process import post_process_nifti_files
 
@@ -79,7 +82,7 @@ datasets_params["TOY2"] = {'K': 2, 'net': shallowCNN, 'B': 2}
 datasets_params["SEGTHOR"] = {'K': 5, 'net': ENet, 'B': 8}
 
 
-def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
+def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     # Networks and scheduler
     gpu: bool = args.gpu and torch.backends.mps.is_available() or torch.cuda.is_available()
     if gpu and torch.backends.mps.is_available():
@@ -89,12 +92,31 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     print(f">> Picked {device} to run experiments")
 
     K: int = datasets_params[args.dataset]['K']
-    net = datasets_params[args.dataset]['net'](1, K)
+    
+    # Initialize the network
+
+    # Set the number of kernels and learning rate based on the tuning flag
+    if args.tuning:
+        kernels = 32
+        lr = 0.001    
+        weight_decay = 1e-4 
+    else:
+        kernels = 16
+        lr = 0.0005
+        weight_decay = 0.0
+
+    net = datasets_params[args.dataset]['net'](1, K, kernels=kernels)
     net.init_weights()
     net.to(device)
 
-    lr = 0.0005
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+
+    # Set up the scheduler if tuning
+    if args.tuning:
+        scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+    else:
+        scheduler = None
+
 
     # Dataset part
     B: int = datasets_params[args.dataset]['B']
@@ -147,12 +169,12 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     args.dest.mkdir(parents=True, exist_ok=True)
 
-    return (net, optimizer, device, train_loader, val_loader, K, root_dir)
+    return (net, optimizer, device, train_loader, val_loader, K, root_dir, scheduler)
 
 
 def runTraining(args, current_time, log_file):
     print(f">>> Setting up to train on {args.dataset} with {args.mode}")
-    net, optimizer, device, train_loader, val_loader, K, root_dir = setup(args)
+    net, optimizer, device, train_loader, val_loader, K, root_dir, scheduler = setup(args)
 
     if args.mode == "full":
         loss_fn = CrossEntropy(idk=list(range(K)))  # Supervise both background and foreground
@@ -274,6 +296,10 @@ def runTraining(args, current_time, log_file):
         mean_val_loss = log_loss_val[e, :].mean().item()
         mean_train_dice = log_dice_tra[e, :, 1:].mean().item()  # Exclude background class
         mean_val_dice = log_dice_val[e, :, 1:].mean().item()
+
+        # Step the scheduler if it exists
+        if scheduler is not None:
+            scheduler.step(mean_val_loss)
 
         # Append mean metrics to lists
         train_losses.append(mean_train_loss)
