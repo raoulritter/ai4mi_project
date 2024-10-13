@@ -45,13 +45,44 @@ In our researched we used offline data augmentation in order to expand our datas
 ```
 python run_augmentation.py
 ```
-**Note (not recommended)**: This data augmentation runs the augmentation on the already preprocessed data. It is highly recommended to do this, because the original data (due to a transformation in the ground truth heart segmentation) does not make too much sense. If you still want to perform the data_augmentation on the original data you can run:
+**Note (not recommended):** This data augmentation runs the augmentation on the already preprocessed data. It is highly recommended to do this, because the original data (due to a transformation in the ground truth heart segmentation) does not make too much sense. If you still want to perform the data_augmentation on the original data you can run:
 ```
 python run_augmentation.py --slice_dir data/SEGTHOR --dest_dir data/SEGTHOR
 ```
 
 ### Model Training
-Now we get to the most important part; model training. How do we train our model?
+Now we get to the most important part; model training. How do we train our model? The core file to do this is `main.py`. However, there are multiple arguments that can be passed here which cause the model to be trained with different settings. Here is a brief overview of these arguments:
+* `--model_name`: Perhaps the most important argument. Which model architecture do you want to train here? There are three options: `'ENet'` (the baseline model), `'SAM2'` or `'VMUNet'`.
+* `--epochs`: Allows you to enter the amount of epochs you want to train the model for.
+* `-O`: The codebase uses a lot of assertions for control and self-documentation, this be disabled with this `-O` option (for faster training).
+* `--preprocess`: Setting this flag means you are using the preprocessed data instead of the raw input data.
+* `--augmentation`: Setting this flag means you are expanding the input dataset in size by using additional augmented data. This argument can only be set when the `--preprocess` argument is also set.
+* `--tuning`: When you set this flag, we are using different options for the baseline architecture, such as a learning rate schedule, weight decay and a different optimizer. Tuning can only be set when the `--model_name` is set to `'ENet'`.
+* `--mode`: This can be either `'partial'` or `'full'` (train on part of the classes or all the classes, the specific classes can be set in `main.py`.
+* `--gpu`: Use a GPU if available.
+* `--dest`: Sets a destination folder for the results
+
+To start our experiment and set a **baseline** we run the full network using the raw input data and baseline model as we received it from the course coordinators. This can be done using the following command:
+```
+python -O main.py --model_name ENet --dataset SEGTHOR --mode full --epochs 25 --dest results/SEGTHOR/ce --gpu
+```
+
+In the 
+
+| Settings | ENet     | VM-Unet  | SAM2     |
+|----------|----------|----------|----------|
+| Preprocessing | Data     | Data     | Data     |
+| Row 2    | Data     | Data     | Data     |
+| Row 3    | Data     | Data     | Data     |
+|----------|----------|----------|----------|
+| Row 4    | Data     | Data     | Data     |
+| Row 5    | Data     | Data     | Data     |
+| Row 6    | Data     | Data     | Data     |
+| Row 7    | Data     | Data     | Data     |
+| Row 8    | Data     | Data     | Data     |
+| Row 9    | Data     | Data     | Data     |
+| Row 10   | Data     | Data     | Data     |
+
 
 
 
