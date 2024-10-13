@@ -71,19 +71,15 @@ In the
 
 | Settings | ENet     | VM-Unet  | SAM2     |
 |----------|----------|----------|----------|
-| Preprocessing | Data     | Data     | Data     |
-| Row 2    | Data     | Data     | Data     |
-| Row 3    | Data     | Data     | Data     |
-|----------|----------|----------|----------|
-| Row 4    | Data     | Data     | Data     |
-| Row 5    | Data     | Data     | Data     |
-| Row 6    | Data     | Data     | Data     |
-| Row 7    | Data     | Data     | Data     |
-| Row 8    | Data     | Data     | Data     |
-| Row 9    | Data     | Data     | Data     |
-| Row 10   | Data     | Data     | Data     |
-
-
+| Baseline | <span style="color:green">Task 1 ✔</span>  |  | Data     |
+| Preprocessing | <span style="color:green">Task 1 ✔</span> | <span style="color:green">Task 1 ✔</span> | <span style="color:green">Task 1 ✔</span> |
+| Preprocessing + Augmentation    | <span style="color:green">✔</span> | Data     | Data     |
+| Preprocessing + Tuning    | Data     | Data     | Data     |
+| Preprocessing + Post-processing    | Data     | Data     | Data     |
+| Preprocessing + Augmentation + Post-Processing    | Data     | Data     | Data     |
+| Preprocessing + Augmentation + Tuning   | Data     | Data     | Data     |
+| Preprocessing + Tuning + Post-Processing   | Data     | Data     | Data     |
+| Preprocessing + Augmentation + Tuning + Post-Processing   | Data     | Data     | Data     |
 
 
 ## Project overview
