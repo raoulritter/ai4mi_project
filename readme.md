@@ -70,7 +70,7 @@ In the table below you can see a brief overview of all the different model setti
 
 | Settings | ENet     | VM-Unet  | SAM2     |
 |----------|----------|----------|----------|
-| Baseline | ✔|  | ✔     | ✔ | 
+| Baseline | ✔| ✔     | ✔ | 
 | Preprocessing |✔|✔|✔|
 | Preprocessing + Augmentation    | ✔ | ✔    | ✔  |
 | Preprocessing + Tuning    | ✔    |   ✖   |    ✖  |
