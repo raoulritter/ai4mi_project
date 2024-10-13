@@ -1,5 +1,60 @@
 # AI for medical imaging — Fall 2024 course project
 
+## Codebase use
+
+### Setting up the environment
+```
+git clone https://github.com/raoulritter/ai4mi_project.git
+cd ai4mi_project
+git submodule init
+git submodule update
+```
+
+This codebase was written for a somewhat recent python (3.10 or more recent). (**Note: Ubuntu and some other Linux distributions might make the distasteful choice to have `python` pointing to 2.+ version, and require to type `python3` explicitly.**) The required packages are listed in [`requirements.txt`](requirements.txt) and a [virtual environment](https://docs.python.org/3/library/venv.html) can easily be created from it through [pip](https://pypi.org/):
+```
+python -m venv ai4mi
+source ai4mi/bin/activate
+which python  # ensure this is not your system's python anymore
+python -m pip install -r requirements.txt
+```
+Conda is an alternative to pip, but is recommended not to mix `conda install` and `pip install`.
+
+### Getting the data
+The first thing that is important is to download the [train and validation data](https://amsuni-my.sharepoint.com/:u:/g/personal/h_t_g_kervadec_uva_nl/EfMdFte7pExAnPwt4tYUcxcBbJJO8dqxJP9r-5pm9M_ARw?e=ZNdjee) and the [test data](https://amsuni-my.sharepoint.com/:u:/g/personal/h_t_g_kervadec_uva_nl/EWZH7ylUUFFCg3lEzzLzJqMBG7OrPw1K4M78wq9t5iBj_w?e=Yejv5d), both of which require a UvA account. Rename both files to `segthor_train.zip` and `test.zip` and place them inside the `data` folder. The following two commands prepare the data in the correct way.
+```
+make data/SEGTHOR
+make data/SEGTHOR_TEST
+```
+
+### Preprocessing
+Whether you want to use preprocessing or not, this is a step that is always useful to execute, just to have the data available. This allows you to later toggle preprocessing on or off very easily. In our paper the full description of preprocessing can be found, along with an explanation of why it is highly recommended. Run the following commands to perform preprocessing on the input data.
+```
+python run_preprocess.py
+```
+The preprocessed data is outputted in the `data/SEGTHOR_preprocessed` folder. If you are interested in the reasons why we perform these preprocessing you can run the following commands:
+```
+cd preprocessing
+python voxel_intensity.py
+python voxel_size.py
+cd ..
+```
+In the `preprocessing/insights` folder you will now find two logs, showing you both the pixel intensities and voxel sizes of the original scans. More details about interpretation of these can be found in our paper.
+
+### Data Augmentation
+In our researched we used offline data augmentation in order to expand our dataset and attempt to improve the quality of our predictions. Similar to preprocessing this step is useful to do in advance, to enable the simple on or off 'toggling' of data augmentation later. The following command performs random augmentations on the data and in doing so double the dataset in size:
+```
+python run_augmentation.py
+```
+**Note (not recommended)**: This data augmentation runs the augmentation on the already preprocessed data. It is highly recommended to do this, because the original data (due to a transformation in the ground truth heart segmentation) does not make too much sense. If you still want to perform the data_augmentation on the original data you can run:
+```
+python run_augmentation.py --slice_dir data/SEGTHOR --dest_dir data/SEGTHOR
+```
+
+### Model Training
+Now we get to the most important part; model training. How do we train our model?
+
+
+
 ## Project overview
 The project is based around the SegTHOR challenge data, which was kindly allowed by Caroline Petitjean (challenge organizer) to use for the course. The challenge was originally on the segmentation of different organs: heart, aorta, esophagus and trachea.
 ![Segthor Overview](segthor_overview.png)
