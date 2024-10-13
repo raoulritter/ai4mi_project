@@ -53,7 +53,7 @@ python run_augmentation.py --slice_dir data/SEGTHOR --dest_dir data/SEGTHOR
 ### Model Training
 Now we get to the most important part; model training. How do we train our model? The core file to do this is `main.py`. However, there are multiple arguments that can be passed here which cause the model to be trained with different settings. Here is a brief overview of these arguments:
 * `--model_name`: Perhaps the most important argument. Which model architecture do you want to train here? There are three options: `'ENet'` (the baseline model), `'SAM2'` or `'VMUNet'`.
-* `--epochs`: Allows you to enter the amount of epochs you want to train the model for.
+* `--epochs`: Allows you to enter the amount of epochs you want to train the model for. All our experiments were run using 50 epochs.
 * `-O`: The codebase uses a lot of assertions for control and self-documentation, this be disabled with this `-O` option (for faster training).
 * `--preprocess`: Setting this flag means you are using the preprocessed data instead of the raw input data.
 * `--augmentation`: Setting this flag means you are expanding the input dataset in size by using additional augmented data. This argument can only be set when the `--preprocess` argument is also set.
@@ -64,7 +64,7 @@ Now we get to the most important part; model training. How do we train our model
 
 To start our experiment and set a **baseline** we run the full network using the raw input data and baseline model as we received it from the course coordinators. This can be done using the following command:
 ```
-python -O main.py --model_name ENet --dataset SEGTHOR --mode full --epochs 25 --dest results/SEGTHOR/ce --gpu
+python -O main.py --model_name ENet --dataset SEGTHOR --mode full --epochs 50 --dest results/SEGTHOR/ce --gpu
 ```
 In the table below you can see a brief overview of all the different model settings that have been tested for this research. More details can be found in our paper.
 
@@ -83,6 +83,13 @@ In the table below you can see a brief overview of all the different model setti
 ### Post-processing
 Since post-processing is a relatively cheap operation, it is included in the standard model training, however both the raw network output and the post-processed output are saved. Metrics calculation is also performed on both outputs in order to be able to compare the two results. In later versions it will be possible to disable post-processing using a post-processing flag.
 
+### Results
+The results can be viewed in multiple ways. Most conveniently a zip file with all necessary results and log is also create for you. 
+
+
+
+
+[open text]
 
 
 
