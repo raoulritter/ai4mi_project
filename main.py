@@ -50,6 +50,31 @@ from utils import (Dcm,
 
 from losses import (CrossEntropy)
 
+# Import our own models (placeholders now)
+import torch.nn as nn
+
+class SAM2(nn.Module):
+    def __init__(self, *args, **kwargs):
+        super(SAM2, self).__init__()
+        # Placeholder implementation
+
+    def forward(self, x):
+        return x  # Placeholder
+
+    def init_weights(self):
+        pass  # Placeholder
+
+class VMUNet(nn.Module):
+    def __init__(self, *args, **kwargs):
+        super(VMUNet, self).__init__()
+        # Placeholder implementation
+
+    def forward(self, x):
+        return x  # Placeholder
+
+    def init_weights(self):
+        pass  # Placeholder
+
 # Imports we have added
 import logging
 import datetime
@@ -81,6 +106,13 @@ datasets_params: dict[str, dict[str, Any]] = {}
 datasets_params["TOY2"] = {'K': 2, 'net': shallowCNN, 'B': 2}
 datasets_params["SEGTHOR"] = {'K': 5, 'net': ENet, 'B': 8}
 
+# Create a dictionary mapping model names to classes
+model_dict = {
+    'ENet': ENet,
+    'SAM2': SAM2,
+    'VMUNet': VMUNet
+}
+
 
 def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     # Networks and scheduler
@@ -92,8 +124,13 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     print(f">> Picked {device} to run experiments")
 
     K: int = datasets_params[args.dataset]['K']
-    
-    # Initialize the network
+
+    # Get the model class based on args.model_name
+    if args.model_name in model_dict:
+        model_class = model_dict[args.model_name]
+    else:
+        raise ValueError(f"Unknown model name {args.model_name}")
+
 
     # Set the number of kernels and learning rate based on the tuning flag
     if args.tuning:
@@ -105,7 +142,9 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
         lr = 0.0005
         weight_decay = 0.0
 
-    net = datasets_params[args.dataset]['net'](1, K, kernels=kernels)
+    # Initialize the network
+    # net = datasets_params[args.dataset]['net'](1, K, kernels=kernels)
+    net = model_class(1, K, kernels=kernels)
     net.init_weights()
     net.to(device)
 
