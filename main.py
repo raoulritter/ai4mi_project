@@ -50,7 +50,7 @@ from utils import (Dcm,
 
 from losses import (CrossEntropy)
 
-# Imports I have added
+# Imports we have added
 import logging
 import datetime
 import os
@@ -59,10 +59,17 @@ import nibabel as nib
 from typing import Dict, List, Tuple
 
 # Post process the NIfTI files
-from post_process.post_process import post_process_nifti_file
+from post_process.post_process import post_process_nifti_files
 
-# Metrics
-from run_metrics_calculation import calculate_metrics
+# Calculating Metrics
+from run_metric_calculation import calculate_metrics
+from metrics.png_to_nifti import reconstruct_nifti
+
+# Test Set inference
+from inference.test_set_inference import run_test_inference
+
+# Creating Zip-file of all results
+import zipfile
 
 
 datasets_params: dict[str, dict[str, Any]] = {}
@@ -91,7 +98,12 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     # Dataset part
     B: int = datasets_params[args.dataset]['B']
-    root_dir = Path("data") / args.dataset
+    
+    # Change the root_dir based on the --preprocess flag
+    if args.preprocess:
+        root_dir = Path("data") / "SEGTHOR_preprocessed"
+    else:
+        root_dir = Path("data") / args.dataset
 
     img_transform = transforms.Compose([
         lambda img: img.convert('L'),
@@ -116,7 +128,8 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
                              root_dir,
                              img_transform=img_transform,
                              gt_transform=gt_transform,
-                             debug=args.debug)
+                             debug=args.debug,
+                             augment=args.augmentation)
     train_loader = DataLoader(train_set,
                               batch_size=B,
                               num_workers=args.num_workers,
@@ -134,12 +147,12 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     args.dest.mkdir(parents=True, exist_ok=True)
 
-    return (net, optimizer, device, train_loader, val_loader, K)
+    return (net, optimizer, device, train_loader, val_loader, K, root_dir)
 
 
-def runTraining(args):
+def runTraining(args, current_time, log_file):
     print(f">>> Setting up to train on {args.dataset} with {args.mode}")
-    net, optimizer, device, train_loader, val_loader, K = setup(args)
+    net, optimizer, device, train_loader, val_loader, K, root_dir = setup(args)
 
     if args.mode == "full":
         loss_fn = CrossEntropy(idk=list(range(K)))  # Supervise both background and foreground
@@ -155,6 +168,16 @@ def runTraining(args):
     log_dice_val: Tensor = torch.zeros((args.epochs, len(val_loader.dataset), K))
 
     best_dice: float = 0
+
+    # Initialize lists to store metrics over epochs
+    train_losses = []
+    val_losses = []
+    train_dices = []
+    val_dices = []
+
+    # For per-class Dice scores
+    per_class_train_dices = {k: [] for k in range(1, K)}  # Exclude background class 0
+    per_class_val_dices = {k: [] for k in range(1, K)}    # Exclude background class 0
 
     for e in range(args.epochs):
         for m in ['train', 'val']:
@@ -252,6 +275,20 @@ def runTraining(args):
         mean_train_dice = log_dice_tra[e, :, 1:].mean().item()  # Exclude background class
         mean_val_dice = log_dice_val[e, :, 1:].mean().item()
 
+        # Append mean metrics to lists
+        train_losses.append(mean_train_loss)
+        val_losses.append(mean_val_loss)
+        train_dices.append(mean_train_dice)
+        val_dices.append(mean_val_dice)
+
+        # Append per-class Dice scores
+        for k in range(1, K):  # Exclude background class
+            class_train_dice = log_dice_tra[e, :, k].mean().item()
+            class_val_dice = log_dice_val[e, :, k].mean().item()
+
+            per_class_train_dices[k].append(class_train_dice)
+            per_class_val_dices[k].append(class_val_dice)
+
         # Log metrics
         logging.info(f'Epoch {e}')
         logging.info(f'Training Loss: {mean_train_loss:.4f}')
@@ -266,10 +303,10 @@ def runTraining(args):
 
             logging.info(f'Class {k} Training Dice: {class_train_dice:.4f}')
             logging.info(f'Class {k} Validation Dice: {class_val_dice:.4f}')
-    
+
     # Post-training reconstruction of the raw output from PNG slices to NIfTI files
     print(">>> Training complete. Reconstructing NIfTI files from the best epoch predictions.")
-    
+
     best_folder = args.dest / "best_epoch"
     png_folder = best_folder / 'val'
     gt_folder = 'data/segthor_train/train'  # Adjust the path if necessary
@@ -287,10 +324,16 @@ def runTraining(args):
     post_process_nifti_files(post_process_input_folder, post_process_output_folder, num_classes)
     print(">>> Post-processing completed successfully.")
 
-    # Metric Calculation 
+    # Metric Calculation
     # Prepare common parameters for metric calculation
     class_labels = list(range(K))  # [0, 1, 2, 3, 4] for SEGTHOR
     class_names = {0: 'Background', 1: 'Esophagus', 2: 'Heart', 3: 'Trachea', 4: 'Aorta'}
+
+    # Determine ground truth filename based on whether --preprocess is set
+    if args.preprocess:
+        gt_filename = 'GT_enhanced.nii.gz'
+    else:
+        gt_filename = 'GT.nii.gz'
 
     # Metric Calculation for Raw Predictions
     print(">>> Starting metrics calculation for raw predictions.")
@@ -301,7 +344,8 @@ def runTraining(args):
         gt_png_dir=str(root_dir / 'val' / 'gt'),
         class_labels=class_labels,
         class_names=class_names,
-        description='Raw Predictions'
+        description='Raw Predictions',
+        gt_filename=gt_filename
     )
 
     # Metric Calculation for Post-Processed Predictions
@@ -313,17 +357,100 @@ def runTraining(args):
         gt_png_dir=str(root_dir / 'val' / 'gt'),
         class_labels=class_labels,
         class_names=class_names,
-        description='Post-Processed Predictions'
+        description='Post-Processed Predictions',
+        gt_filename=gt_filename
     )
 
-    # Zip summary file creations
-    # Here
+    # Log the collected metrics over epochs
+    logging.info('Training and Validation Losses over Epochs:')
+    logging.info(f'train_loss = {train_losses}')
+    logging.info(f'val_loss = {val_losses}')
+
+    logging.info('Training and Validation Dice Coefficients over Epochs:')
+    logging.info(f'train_dice = {train_dices}')
+    logging.info(f'val_dice = {val_dices}')
+
+    # Log per-class Dice scores
+    for k in range(1, K):
+        logging.info(f'Class {k} Training Dice over Epochs: {per_class_train_dices[k]}')
+        logging.info(f'Class {k} Validation Dice over Epochs: {per_class_val_dices[k]}')
+
+    # Test Set Inference
+    print(">>> Starting inference on test set.")
+
+    # Load the best model (if not already loaded)
+    net = torch.load(args.dest / "bestmodel.pkl", map_location=device)
+    net.to(device)
+    net.eval()
+
+    # Perform inference on the test set
+    run_test_inference(args, net, device, K)
+
+    # Zip summary file creation
+    print(">>> Creating summary zip file.")
+
+    # Determine statuses for preprocess, augmentation, and tuning
+    pre_status = 'on' if args.preprocess else 'off'
+    aug_status = 'on' if args.augmentation else 'off'
+    tuning_status = 'on' if args.tuning else 'off'
+
+    # Construct the zip file name
+    zip_filename = f"experiment_{args.model_name}_pre-{pre_status}_aug-{aug_status}_tuning-{tuning_status}_{current_time}.zip"
+
+    # Place the zip file in the root directory
+    zip_path = Path('.') / zip_filename
+
+    # Define the base directory (project root) to calculate relative paths
+    base_dir = Path('.').resolve()
+
+    # Ensure paths are absolute
+    best_epoch_folder = (args.dest / 'best_epoch').resolve()
+    best_epoch_txt = (args.dest / 'best_epoch.txt').resolve()
+    bestmodel_pkl = (args.dest / 'bestmodel.pkl').resolve()
+    bestweights_pt = (args.dest / 'bestweights.pt').resolve()
+    log_file = log_file.resolve()
+
+    # Initialize the zip file
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        # Add the best_epoch folder and its contents
+        for root, dirs, files in os.walk(best_epoch_folder):
+            for file in files:
+                file_path = (Path(root) / file).resolve()
+                # Compute the relative path within the zip file
+                arcname = file_path.relative_to(base_dir)
+                # Write the file to the zip archive
+                zipf.write(file_path, arcname)
+
+        # Add the best_epoch.txt file
+        if best_epoch_txt.exists():
+            arcname = best_epoch_txt.relative_to(base_dir)
+            zipf.write(best_epoch_txt, arcname)
+
+        # Add the bestmodel.pkl file
+        if bestmodel_pkl.exists():
+            arcname = bestmodel_pkl.relative_to(base_dir)
+            zipf.write(bestmodel_pkl, arcname)
+
+        # Add the bestweights.pt file
+        if bestweights_pt.exists():
+            arcname = bestweights_pt.relative_to(base_dir)
+            zipf.write(bestweights_pt, arcname)
+
+        # Add the logging file
+        if log_file.exists():
+            arcname = log_file.relative_to(base_dir)
+            zipf.write(log_file, arcname)
+
+    print(f">>> Summary zip file created at {zip_path}")
+
+
+
 
 def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--epochs', default=200, type=int)
-    parser.add_argument('--dataset', default='TOY2', choices=datasets_params.keys())
+    parser.add_argument('--dataset', default='SEGTHOR', choices=datasets_params.keys())
     parser.add_argument('--mode', default='full', choices=['partial', 'full'])
     parser.add_argument('--dest', type=Path, required=True,
                         help="Destination directory to save the results (predictions and weights).")
@@ -333,8 +460,30 @@ def main():
     parser.add_argument('--debug', action='store_true',
                         help="Keep only a fraction (10 samples) of the datasets, "
                              "to test the logic around epochs and logging easily.")
+    
+    # Added by to configure model settings
+    parser.add_argument('--model_name', type=str, required=True,
+                        choices=['ENet', 'SAM2', 'VMUNet'],
+                        help="Name of the model to use. Choices are 'ENet', 'SAM2', or 'VMUNet'.")
+    parser.add_argument('--preprocess', action='store_true',
+                        help="If set, the program will use the preprocessed data directory.")
+    parser.add_argument('--augmentation', action='store_true',
+                        help="If set, the program will include augmented data in training.")
+    parser.add_argument('--tuning', action='store_true',
+                        help="If set, the program will perform tuning. Can only be set when --model_name='ENet'.")
 
     args = parser.parse_args()
+
+    # Enforce that --augmentation requires --preprocess
+    if args.augmentation and not args.preprocess:
+        parser.error("--augmentation requires --preprocess.")
+
+    # Enforce that --tuning can only be set when --model_name='ENet'
+    if args.tuning and args.model_name != 'ENet':
+        parser.error("--tuning can only be set when --model_name='ENet'.")
+
+    # Convert args.dest to an absolute path
+    args.dest = args.dest.resolve()
 
     # Setup logging
     current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -355,7 +504,7 @@ def main():
 
     pprint(args)
 
-    runTraining(args)
+    runTraining(args, current_time, log_file)
 
 
 if __name__ == '__main__':
