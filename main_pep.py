@@ -91,7 +91,8 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     # Dataset part
     B: int = datasets_params[args.dataset]['B']
-    root_dir = Path("data") / args.dataset
+    # root_dir = Path("data") / args.dataset
+    root_dir = Path("data") / "SEGTHOR_preprocessed"
 
     img_transform = transforms.Compose([
         lambda img: img.convert('L'),

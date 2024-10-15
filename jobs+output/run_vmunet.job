@@ -1,20 +1,19 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu
+#SBATCH --partition=gpu_h100
 #SBATCH --gpus=1
 #SBATCH --job-name=VMUNet
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=18
-#SBATCH --time=00:10:00
+#SBATCH --cpus-per-task=16  
+#SBATCH --time=01:00:00
 #SBATCH --output=slurm_out/VMUNet_%A.out
 
 module purge
 module load 2023
 module load Miniconda3/23.5.2-0
-module load CUDA/12.1.1
 
-source ai4mi2/bin/activate
+source activate ai4mi
 
-# python -m pip install -r requirements.txt
+cd /home/scur2508/ai4mi_project
 
-python main_pep.py --dataset SEGTHOR --model VMUNet --mode full --epoch 25 --dest results/SEGTHOR/ce --gpu
+python main_pep.py --dataset SEGTHOR --model VMUNet --mode full --epoch 50 --dest /scratch-shared/scur2508/results/SEGTHOR_VMUNet/ --gpu

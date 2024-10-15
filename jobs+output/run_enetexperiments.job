@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_h100
+#SBATCH --gpus=1
+#SBATCH --job-name=ENet_experiments
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --time=10:00:00
+#SBATCH --output=slurm_out/ENet_experiments_%A_%a.out
+#SBATCH --array=0-7
+
+# Load required modules
+module purge
+module load 2023
+module load Miniconda3/23.5.2-0
+
+# Activate the environment
+source activate ai4mi
+
+# Change to the default directory
+cd /home/scur2508/ai4mi_project
+
+# Define experiment configurations
+CONFIGS=(
+    "--preprocess --augmentation --tuning --optimizer Adam"
+    "--preprocess --augmentation --tuning --optimizer AdamW"
+    "--preprocess --augmentation --optimizer Adam"
+    "--preprocess --augmentation --optimizer AdamW"
+    "--preprocess --optimizer Adam"
+    "--preprocess --optimizer AdamW"
+    "--optimizer Adam"
+    "--optimizer AdamW"
+)
+
+# Get the configuration for this job array task
+CONFIG=${CONFIGS[$SLURM_ARRAY_TASK_ID]}
+
+# Run the Python script with the selected configuration
+python -O main.py --model_name ENet --dataset SEGTHOR --mode full --epochs 50 --dest /scratch-shared/scur2508/results/SEGTHOR_Enet_experiment_${SLURM_ARRAY_TASK_ID}/ --gpu $CONFIG

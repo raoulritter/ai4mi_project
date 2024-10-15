@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_h100
+#SBATCH --gpus=1
+#SBATCH --job-name=ADAMW_normal
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --time=01:00:00
+#SBATCH --output=slurm_out/ADAMW_%A.out
+
+# Load required modules
+module purge
+module load 2023
+module load Miniconda3/23.5.2-0
+
+# Activate the environment
+source activate ai4mi
+
+# Change to the default directory
+cd /home/scur2508/ai4mi_project
+# Run the Python script
+python -O main.py --model_name ENet --dataset SEGTHOR --mode full --epochs 50 --dest /scratch-shared/scur2508/results/SEGTHOR_Enet_adamW/ --tuning --gpu --preprocess --augmentation --optimizer AdamW

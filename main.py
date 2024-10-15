@@ -219,7 +219,7 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     wandb.init(
         project=os.getenv("WANDB_PROJECT", args.wandb_project),
         entity=os.getenv("WANDB_ENTITY", args.wandb_entity),
-        name=f"{args.dataset}_{args.model_name}_{args.mode}_lr{lr}_optimizer{args.optimizer}_epochs{args.epochs}",
+        name=f"{args.dataset}_{args.model_name}_{args.mode}_lr{lr}_kernelsize{kernels}_optimizer{args.optimizer}_epochs{args.epochs}",
         config={
             "learning_rate": lr,
             "epochs": args.epochs,
@@ -517,49 +517,39 @@ def runTraining(args, current_time, log_file):
     # Construct the zip file name
     zip_filename = f"experiment_{args.model_name}_pre-{pre_status}_aug-{aug_status}_tuning-{tuning_status}_{current_time}.zip"
 
-    # Place the zip file in the root directory
-    zip_path = Path('.') / zip_filename
+    # Place the zip file in the current working directory
+    zip_path = Path.cwd() / zip_filename
 
-    # Define the base directory (project root) to calculate relative paths
-    base_dir = Path('.').resolve()
-
-    # Ensure paths are absolute
-    best_epoch_folder = (args.dest / 'best_epoch').resolve()
-    best_epoch_txt = (args.dest / 'best_epoch.txt').resolve()
-    bestmodel_pkl = (args.dest / 'bestmodel.pkl').resolve()
-    bestweights_pt = (args.dest / 'bestweights.pt').resolve()
-    log_file = log_file.resolve()
+    # Define the paths
+    best_epoch_folder = args.dest / 'best_epoch'
+    best_epoch_txt = args.dest / 'best_epoch.txt'
+    bestmodel_pkl = args.dest / 'bestmodel.pkl'
+    bestweights_pt = args.dest / 'bestweights.pt'
 
     # Initialize the zip file
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         # Add the best_epoch folder and its contents
         for root, dirs, files in os.walk(best_epoch_folder):
             for file in files:
-                file_path = (Path(root) / file).resolve()
-                # Compute the relative path within the zip file
-                arcname = file_path.relative_to(base_dir)
-                # Write the file to the zip archive
+                file_path = Path(root) / file
+                arcname = file_path.name  # Use just the filename as the archive name
                 zipf.write(file_path, arcname)
 
         # Add the best_epoch.txt file
         if best_epoch_txt.exists():
-            arcname = best_epoch_txt.relative_to(base_dir)
-            zipf.write(best_epoch_txt, arcname)
+            zipf.write(best_epoch_txt, best_epoch_txt.name)
 
         # Add the bestmodel.pkl file
         if bestmodel_pkl.exists():
-            arcname = bestmodel_pkl.relative_to(base_dir)
-            zipf.write(bestmodel_pkl, arcname)
+            zipf.write(bestmodel_pkl, bestmodel_pkl.name)
 
         # Add the bestweights.pt file
         if bestweights_pt.exists():
-            arcname = bestweights_pt.relative_to(base_dir)
-            zipf.write(bestweights_pt, arcname)
+            zipf.write(bestweights_pt, bestweights_pt.name)
 
         # Add the logging file
         if log_file.exists():
-            arcname = log_file.relative_to(base_dir)
-            zipf.write(log_file, arcname)
+            zipf.write(log_file, log_file.name)
 
     print(f">>> Summary zip file created at {zip_path}")
 
