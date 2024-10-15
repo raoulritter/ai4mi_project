@@ -37,7 +37,6 @@ data/segthor_test: data/test.zip
 
 data/SEGTHOR_TEST: data/segthor_test
 	$(info $(green)python $(CFLAGS) slice_segthor_test.py$(reset))
-	rm -rf $@_tmp $@
-	python $(CFLAGS) slice_segthor_test.py --source_dir $< --dest_dir $@_tmp \
+	python $(CFLAGS) slice_segthor_test.py --source_dir $< --dest_dir $@ \
 		--shape 256 256
-	mv $@_tmp $@
+	
