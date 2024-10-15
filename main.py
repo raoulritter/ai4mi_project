@@ -42,7 +42,6 @@ from torchvision import transforms
 import wandb
 from dataset import SliceDataset
 from ENet import ENet
-<<<<<<< Updated upstream
 from losses import CrossEntropy
 from ShallowNet import shallowCNN
 from utils import (
@@ -54,19 +53,9 @@ from utils import (
     save_images,
     tqdm_,
 )
-=======
-from utils import (Dcm,
-                   class2one_hot,
-                   probs2one_hot,
-                   probs2class,
-                   tqdm_,
-                   dice_coef,
-                   save_images)
-
 from losses import (CrossEntropy)
 import pdb 
 
->>>>>>> Stashed changes
 
 datasets_params: dict[str, dict[str, Any]] = {}
 # K for the number of classes
@@ -94,7 +83,8 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
 
     # Learning rate and optimizer
     lr = 0.0005
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
+    # optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
+    optimizer = torch.optim.AdamW(net.parameters(), lr=lr, betas=(0.9, 0.999))
 
     # Dataset part
     B: int = datasets_params[args.dataset]["B"]
@@ -136,7 +126,6 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
         train_set, batch_size=B, num_workers=args.num_workers, shuffle=True
     )
 
-<<<<<<< Updated upstream
     val_set = SliceDataset(
         "val",
         root_dir,
@@ -147,7 +136,6 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
     val_loader = DataLoader(
         val_set, batch_size=B, num_workers=args.num_workers, shuffle=False
     )
-=======
     val_set = SliceDataset('val',
                            root_dir,
                            img_transform=img_transform,
@@ -170,10 +158,7 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int]:
                              batch_size=B,
                              num_workers=args.num_workers,
                              shuffle=False)
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 
     args.dest.mkdir(parents=True, exist_ok=True)
 
@@ -292,8 +277,6 @@ def runTraining(args):
                         }
                     tq_iter.set_postfix(postfix_dict)
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
                     # Log to wandb
                     if m == "train":
                         wandb.log(
@@ -312,21 +295,12 @@ def runTraining(args):
                             }
                         )
 
-        # Save logs
-        np.save(args.dest / "loss_tra.npy", log_loss_tra)
-        np.save(args.dest / "dice_tra.npy", log_dice_tra)
-        np.save(args.dest / "loss_val.npy", log_loss_val)
-        np.save(args.dest / "dice_val.npy", log_dice_val)
-=======
-=======
->>>>>>> Stashed changes
         # I save it at each epochs, in case the code crashes or I decide to stop it early
         # np.save(args.dest / "loss_tra.npy", log_loss_tra)
         # np.save(args.dest / "dice_tra.npy", log_dice_tra)
         # np.save(args.dest / "loss_val.npy", log_loss_val)
         # np.save(args.dest / "dice_val.npy", log_dice_val)
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
+
 
         # Log epoch metrics to wandb
         wandb.log(
@@ -338,8 +312,7 @@ def runTraining(args):
                 "epoch": e,
             }
         )
-=======
->>>>>>> Stashed changes
+
 
         current_dice: float = log_dice_val[e, :, 1:].mean().item()
         if current_dice > best_dice:
@@ -376,9 +349,8 @@ def main():
         required=True,
         help="Destination directory to save the results (predictions and weights).",
     )
-
-<<<<<<< Updated upstream
     parser.add_argument("--num_workers", type=int, default=5)
+
     parser.add_argument("--gpu", action="store_true")
     parser.add_argument(
         "--debug",
@@ -399,18 +371,8 @@ def main():
         default="mae-testing",
         help="Weights & Biases entity (username or team name)",
     )
-=======
-    parser.add_argument('--num_workers', type=int, default=5)
-    parser.add_argument('--gpu', action='store_true')
-    parser.add_argument('--debug', action='store_true',
-                        help="Keep only a fraction (10 samples) of the datasets, "
-                             "to test the logic around epochs and logging easily.")
-    parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 
     args = parser.parse_args()
 
