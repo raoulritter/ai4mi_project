@@ -51,7 +51,7 @@ def run_test_inference(args, net, device, K):
         img_dir = test_root_dir / 'img'
     else:
         test_root_dir = Path("data") / "segthor_test" / "test"
-        img_dir = test_root_dir  # Assuming images are directly under this path
+        img_dir = Path("data") / "SEGTHOR_TEST" / "test" / "img"
 
     print("test_root_dir: ", test_root_dir)
     print("img_dir: ", img_dir)
