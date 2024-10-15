@@ -31,6 +31,7 @@ from operator import itemgetter
 from shutil import copytree, rmtree
 
 import torch
+import wandb
 import numpy as np
 import torch.nn.functional as F
 from torch import nn, Tensor
@@ -98,6 +99,9 @@ from inference.test_set_inference import run_test_inference
 
 # Creating Zip-file of all results
 import zipfile
+
+# Load environment variables
+from dotenv import load_dotenv
 
 
 datasets_params: dict[str, dict[str, Any]] = {}
@@ -208,6 +212,22 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
 
     args.dest.mkdir(parents=True, exist_ok=True)
 
+    # Initialize wandb
+    wandb.init(
+        project=os.getenv("WANDB_PROJECT", args.wandb_project),
+        entity=os.getenv("WANDB_ENTITY", args.wandb_entity),
+        name=f"{args.dataset}_{args.mode}_lr{lr}_epochs{args.epochs}",
+        config={
+            "learning_rate": lr,
+            "epochs": args.epochs,
+            "batch_size": B,
+            "dataset": args.dataset,
+            "mode": args.mode,
+            "optimizer": "Adam",
+            "model": net.__class__.__name__,
+        },
+    )
+
     return (net, optimizer, device, train_loader, val_loader, K, root_dir, scheduler)
 
 
@@ -307,6 +327,24 @@ def runTraining(args, current_time, log_file):
                                          for k in range(1, K)}
                     tq_iter.set_postfix(postfix_dict)
 
+                    # Log to wandb
+                    if m == "train":
+                        wandb.log(
+                            {
+                                "train/loss": loss.item(),
+                                "train/dice": log_dice[e, :j, 1:].mean().item(),
+                                "epoch": e,
+                            }
+                        )
+                    else:  # validation
+                        wandb.log(
+                            {
+                                "val/loss": loss.item(),
+                                "val/dice": log_dice[e, :j, 1:].mean().item(),
+                                "epoch": e,
+                            }
+                        )
+
         # I save it at each epochs, in case the code crashes or I decide to stop it early
         np.save(args.dest / "loss_tra.npy", log_loss_tra)
         np.save(args.dest / "dice_tra.npy", log_dice_tra)
@@ -327,6 +365,9 @@ def runTraining(args, current_time, log_file):
 
             torch.save(net, args.dest / "bestmodel.pkl")
             torch.save(net.state_dict(), args.dest / "bestweights.pt")
+
+            # Log best model to wandb
+            wandb.log({"best_dice": best_dice, "best_epoch": e})
 
         # After both training and validation phases are complete for the epoch
 
@@ -368,6 +409,17 @@ def runTraining(args, current_time, log_file):
 
             logging.info(f'Class {k} Training Dice: {class_train_dice:.4f}')
             logging.info(f'Class {k} Validation Dice: {class_val_dice:.4f}')
+
+        # Log epoch metrics to wandb
+        wandb.log(
+            {
+                "train/epoch_loss": log_loss_tra[e].mean().item(),
+                "train/epoch_dice": log_dice_tra[e, :, 1:].mean().item(),
+                "val/epoch_loss": log_loss_val[e].mean().item(),
+                "val/epoch_dice": log_dice_val[e, :, 1:].mean().item(),
+                "epoch": e,
+            }
+        )
 
     # Post-training reconstruction of the raw output from PNG slices to NIfTI files
     print(">>> Training complete. Reconstructing NIfTI files from the best epoch predictions.")
@@ -508,7 +560,7 @@ def runTraining(args, current_time, log_file):
 
     print(f">>> Summary zip file created at {zip_path}")
 
-
+    wandb.finish()
 
 
 def main():
@@ -536,6 +588,19 @@ def main():
                         help="If set, the program will include augmented data in training.")
     parser.add_argument('--tuning', action='store_true',
                         help="If set, the program will perform tuning. Can only be set when --model_name='ENet'.")
+
+    parser.add_argument(
+        "--wandb_project",
+        type=str,
+        default="ai4mi",
+        help="Weights & Biases project name",
+    )
+    parser.add_argument(
+        "--wandb_entity",
+        type=str,
+        default="mae-testing",
+        help="Weights & Biases entity (username or team name)",
+    )
 
     args = parser.parse_args()
 

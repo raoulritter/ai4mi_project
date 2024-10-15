@@ -27,9 +27,10 @@ make data/SEGTHOR_TEST
 ```
 
 ### Preprocessing
-Whether you want to use preprocessing or not, this is a step that is always useful to execute, just to have the data available. This allows you to later toggle preprocessing on or off very easily. In our paper the full description of preprocessing can be found, along with an explanation of why it is highly recommended. Run the following commands to perform preprocessing on the input data.
+Whether you want to use preprocessing or not, this is a step that is always useful to execute, just to have the data available. This allows you to later toggle preprocessing on or off very easily. In our paper the full description of preprocessing can be found, along with an explanation of why it is highly recommended. Run the following commands to perform preprocessing on the input data. We have an additional preprocess file for the test set. 
 ```
 python run_preprocess.py
+python run_test_preprocess.py
 ```
 The preprocessed data is outputted in the `data/SEGTHOR_preprocessed` folder. If you are interested in the reasons why we perform these preprocessing you can run the following commands:
 ```
