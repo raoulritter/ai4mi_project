@@ -152,13 +152,16 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     net.init_weights()
     net.to(device)
 
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+    if args.optimizer == "Adam":
+        optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+    elif args.optimizer == "AdamW": 
+        optimizer = torch.optim.AdamW(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+    else:
+        raise ValueError(f"Unknown optimizer {args.optimizer}")
+    
 
     # Set up the scheduler if tuning
-    if args.tuning:
-        scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
-    else:
-        scheduler = None
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
 
     # Dataset part
@@ -216,14 +219,14 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     wandb.init(
         project=os.getenv("WANDB_PROJECT", args.wandb_project),
         entity=os.getenv("WANDB_ENTITY", args.wandb_entity),
-        name=f"{args.dataset}_{args.mode}_lr{lr}_epochs{args.epochs}",
+        name=f"{args.dataset}_{args.model_name}_{args.mode}_lr{lr}_optimizer{args.optimizer}_epochs{args.epochs}",
         config={
             "learning_rate": lr,
             "epochs": args.epochs,
             "batch_size": B,
             "dataset": args.dataset,
             "mode": args.mode,
-            "optimizer": "Adam",
+            "optimizer": args.optimizer,
             "model": net.__class__.__name__,
         },
     )
@@ -589,6 +592,9 @@ def main():
     parser.add_argument('--tuning', action='store_true',
                         help="If set, the program will perform tuning. Can only be set when --model_name='ENet'.")
 
+    parser.add_argument('--optimizer', type=str, required=True,
+                        choices=['Adam', 'AdamW'],
+                        help="Name of the optimizer to use. Choices are 'Adam' or 'AdamW'.")
     parser.add_argument(
         "--wandb_project",
         type=str,
