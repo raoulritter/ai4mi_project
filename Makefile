@@ -15,7 +15,6 @@ data/TOY2:
 	python gen_two_circles.py --dest $@_tmp -n 1000 100 -r 25 -wh 256 256
 	mv $@_tmp $@
 
-
 # Extraction and slicing for Segthor
 data/segthor_train: data/segthor_train.zip
 	$(info $(yellow)unzip $<$(reset))
@@ -28,4 +27,17 @@ data/SEGTHOR: data/segthor_train
 	rm -rf $@_tmp $@
 	python $(CFLAGS) slice_segthor.py --source_dir $^ --dest_dir $@_tmp \
 		--shape 256 256 --retain 10
+	mv $@_tmp $@
+
+# Extraction and slicing for Segthor test data
+data/segthor_test: data/test.zip
+	$(info $(yellow)unzip $< to $@$(reset))
+	unzip -q $< -d $@
+	rm -f $@/.DS_STORE
+
+data/SEGTHOR_TEST: data/segthor_test
+	$(info $(green)python $(CFLAGS) slice_segthor_test.py$(reset))
+	rm -rf $@_tmp $@
+	python $(CFLAGS) slice_segthor_test.py --source_dir $< --dest_dir $@_tmp \
+		--shape 256 256
 	mv $@_tmp $@
