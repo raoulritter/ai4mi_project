@@ -40,10 +40,10 @@ def augment_image_pair(args):
         img, tform.inverse, order=1, mode="edge", preserve_range=True
     ).astype(np.uint8)
     # Apply flips
-    if h_flip:
-        augmented_img = np.fliplr(augmented_img)
-    if v_flip:
-        augmented_img = np.flipud(augmented_img)
+    # if h_flip:
+    #     augmented_img = np.fliplr(augmented_img)
+    # if v_flip:
+    #     augmented_img = np.flipud(augmented_img)
 
     # Apply to ground truth
     augmented_gt = warp(
