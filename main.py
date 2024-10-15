@@ -377,7 +377,13 @@ def runTraining(args, current_time, log_file):
     gt_folder = 'data/segthor_train/train'  # Adjust the path if necessary
     nifti_output_folder = best_folder / 'nifti'
 
-    reconstruct_nifti(str(png_folder), gt_folder, str(nifti_output_folder))
+    # Determine ground truth filename based on whether --preprocess is set
+    if args.preprocess:
+        gt_filename = 'GT_enhanced.nii.gz'
+    else:
+        gt_filename = 'GT.nii.gz'
+
+    reconstruct_nifti(str(png_folder), gt_folder, str(nifti_output_folder), gt_filename)
 
     # Post-processing of the raw output to "better" (read: smoother) predictions
     print(">>> Starting post-processing of NIfTI files.")
@@ -393,12 +399,6 @@ def runTraining(args, current_time, log_file):
     # Prepare common parameters for metric calculation
     class_labels = list(range(K))  # [0, 1, 2, 3, 4] for SEGTHOR
     class_names = {0: 'Background', 1: 'Esophagus', 2: 'Heart', 3: 'Trachea', 4: 'Aorta'}
-
-    # Determine ground truth filename based on whether --preprocess is set
-    if args.preprocess:
-        gt_filename = 'GT_enhanced.nii.gz'
-    else:
-        gt_filename = 'GT.nii.gz'
 
     # Metric Calculation for Raw Predictions
     print(">>> Starting metrics calculation for raw predictions.")
@@ -507,8 +507,6 @@ def runTraining(args, current_time, log_file):
             zipf.write(log_file, arcname)
 
     print(f">>> Summary zip file created at {zip_path}")
-
-
 
 
 def main():
