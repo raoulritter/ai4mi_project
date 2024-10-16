@@ -428,11 +428,16 @@ def runTraining(args, current_time, log_file):
     print(">>> Training complete. Reconstructing NIfTI files from the best epoch predictions.")
 
     best_folder = args.dest / "best_epoch"
-    png_folder = best_folder / 'val'
+    png_folder = best_folder / 'val' 
+    #TODO: CHECK THIS FOLDER
     gt_folder = 'data/segthor_train/train'  # Adjust the path if necessary
     nifti_output_folder = best_folder / 'nifti'
 
-    reconstruct_nifti(str(png_folder), gt_folder, str(nifti_output_folder))
+    if args.preprocess:
+        gt_filename = 'GT_enhanced.nii.gz'
+    else:
+        gt_filename = 'GT.nii.gz'
+    reconstruct_nifti(str(png_folder), gt_folder, str(nifti_output_folder), gt_filename)
 
     # Post-processing of the raw output to "better" (read: smoother) predictions
     print(">>> Starting post-processing of NIfTI files.")
@@ -448,12 +453,6 @@ def runTraining(args, current_time, log_file):
     # Prepare common parameters for metric calculation
     class_labels = list(range(K))  # [0, 1, 2, 3, 4] for SEGTHOR
     class_names = {0: 'Background', 1: 'Esophagus', 2: 'Heart', 3: 'Trachea', 4: 'Aorta'}
-
-    # Determine ground truth filename based on whether --preprocess is set
-    if args.preprocess:
-        gt_filename = 'GT_enhanced.nii.gz'
-    else:
-        gt_filename = 'GT.nii.gz'
 
     # Metric Calculation for Raw Predictions
     print(">>> Starting metrics calculation for raw predictions.")
@@ -521,10 +520,10 @@ def runTraining(args, current_time, log_file):
     zip_path = Path.cwd() / zip_filename
 
     # Define the paths
-    best_epoch_folder = args.dest / 'best_epoch'
-    best_epoch_txt = args.dest / 'best_epoch.txt'
-    bestmodel_pkl = args.dest / 'bestmodel.pkl'
-    bestweights_pt = args.dest / 'bestweights.pt'
+    best_epoch_folder = (args.dest / 'best_epoch').resolve()
+    best_epoch_txt = (args.dest / 'best_epoch.txt').resolve()
+    bestmodel_pkl = (args.dest / 'bestmodel.pkl').resolve()
+    bestweights_pt = (args.dest / 'bestweights.pt').resolve()
 
     # Initialize the zip file
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -615,7 +614,7 @@ def main():
     current_time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     log_dir = Path('logging')
     log_dir.mkdir(parents=True, exist_ok=True)
-    log_file = log_dir / f'training_{current_time}.txt'
+    log_file = log_dir / f'training_{current_time}_{args.model_name}_pre-{args.preprocess}_aug-{args.augmentation}_tuning-{args.tuning}.txt'
 
     # Configure logging
     logging.basicConfig(filename=log_file,

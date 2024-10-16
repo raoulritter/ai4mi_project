@@ -9,3 +9,6 @@ matplotlib
 pre-commit
 ruff
 isort
+timm
+wandb
+einops

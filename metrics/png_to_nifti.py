@@ -4,7 +4,7 @@ import nibabel as nib
 from PIL import Image
 import glob
 
-def reconstruct_nifti(png_folder, gt_folder, output_folder):
+def reconstruct_nifti(png_folder, gt_folder, output_folder, gt_filename):
     """
     Reconstruct NIfTI files from PNG slices.
 
@@ -34,7 +34,7 @@ def reconstruct_nifti(png_folder, gt_folder, output_folder):
         patient_png_files.sort(key=lambda x: get_slice_index(os.path.basename(x)))
 
         # Load the ground truth NIfTI file to get target dimensions and metadata
-        gt_nifti_path = os.path.join(gt_folder, patient_id, 'GT.nii.gz')
+        gt_nifti_path = os.path.join(gt_folder, patient_id, gt_filename)
         if not os.path.exists(gt_nifti_path):
             print(f'Ground truth NIfTI file not found for {patient_id} at {gt_nifti_path}')
             continue
