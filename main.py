@@ -154,15 +154,17 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
 
     if args.optimizer == "Adam":
         optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
-    elif args.optimizer == "AdamW": 
+        if args.tuning:
+            scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+        else:
+            scheduler = None
+    elif args.optimizer == "AdamW":
         optimizer = torch.optim.AdamW(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+        scheduler = None
     else:
         raise ValueError(f"Unknown optimizer {args.optimizer}")
-    
 
-    # Set up the scheduler if tuning
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
-
+    # The scheduler is setup in the optimizer based on the tuning flag
 
     # Dataset part
     B: int = datasets_params[args.dataset]['B']
@@ -512,46 +514,30 @@ def runTraining(args, current_time, log_file):
     pre_status = 'on' if args.preprocess else 'off'
     aug_status = 'on' if args.augmentation else 'off'
     tuning_status = 'on' if args.tuning else 'off'
+    optimizer_name = args.optimizer
 
     # Construct the zip file name
-    zip_filename = f"experiment_{args.model_name}_pre-{pre_status}_aug-{aug_status}_tuning-{tuning_status}_{current_time}.zip"
+    zip_filename = f"experiment_{args.model_name}_pre-{pre_status}_aug-{aug_status}_tuning-{tuning_status}_optimizer-{optimizer_name}_{current_time}.zip"
 
     # Place the zip file in the current working directory
-    zip_path = Path.cwd() / zip_filename
+    zip_path = Path('.') / zip_filename
 
-    # Define the paths
-    best_epoch_folder = (args.dest / 'best_epoch').resolve()
-    best_epoch_txt = (args.dest / 'best_epoch.txt').resolve()
-    bestmodel_pkl = (args.dest / 'bestmodel.pkl').resolve()
-    bestweights_pt = (args.dest / 'bestweights.pt').resolve()
-
-    # Initialize the zip file
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        # Add the best_epoch folder and its contents
-        for root, dirs, files in os.walk(best_epoch_folder):
-            for file in files:
-                file_path = Path(root) / file
-                arcname = file_path.name  # Use just the filename as the archive name
+    # Create a new zip file
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        # Function to add file to zip
+        def add_file_to_zip(file_path, arcname):
+            if file_path.exists():
                 zipf.write(file_path, arcname)
+            else:
+                print(f"Warning: File not found: {file_path}")
 
-        # Add the best_epoch.txt file
-        if best_epoch_txt.exists():
-            zipf.write(best_epoch_txt, best_epoch_txt.name)
-
-        # Add the bestmodel.pkl file
-        if bestmodel_pkl.exists():
-            zipf.write(bestmodel_pkl, bestmodel_pkl.name)
-
-        # Add the bestweights.pt file
-        if bestweights_pt.exists():
-            zipf.write(bestweights_pt, bestweights_pt.name)
-
-        # Add the logging file
-        if log_file.exists():
-            zipf.write(log_file, log_file.name)
-
-    print(f">>> Summary zip file created at {zip_path}")
-
+        add_file_to_zip(args.dest / 'best_epoch' / 'nifti', 'best_epoch/nifti')
+        add_file_to_zip(args.dest / 'best_epoch' / 'nifti_post_processed', 'best_epoch/nifti_post_processed')
+        add_file_to_zip(args.dest / 'best_epoch.txt', 'best_epoch.txt')
+        add_file_to_zip(args.dest / 'bestmodel.pkl', 'bestmodel.pkl')
+        add_file_to_zip(args.dest / 'bestweights.pt', 'bestweights.pt')
+        add_file_to_zip(Path(log_file), 'log_file.txt')
+    print(f">>> Summary zip file created: {zip_path}")
     wandb.finish()
 
 
@@ -615,6 +601,8 @@ def main():
     log_dir = Path('logging')
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / f'training_{current_time}_{args.model_name}_pre-{args.preprocess}_aug-{args.augmentation}_tuning-{args.tuning}.txt'
+
+    # log_file = log_dir / f'training_{current_time}_{args.model_name}_pre-{args.preprocess}_aug-{args.augmentation}_tuning-{args.tuning}.txt'
 
     # Configure logging
     logging.basicConfig(filename=log_file,
