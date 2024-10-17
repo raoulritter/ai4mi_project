@@ -24,6 +24,7 @@
 
 import argparse
 import warnings
+import os
 from typing import Any
 from pathlib import Path
 from pprint import pprint
@@ -135,6 +136,12 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     else:
         raise ValueError(f"Unknown model name {args.model_name}")
 
+    # for VMamba, check if weights are in the right path
+    if args.model == "VMUNet":
+        # Check if the pre-trained weights file exists
+        weight_path = './pre_trained_weights/vmamba_small_e238_ema.pth'
+        if not os.path.exists(weight_path):
+            raise KeyError(f"Pre-trained weights file not found: {weight_path}.\nPlease download the weights, see: https://github.com/JCruan519/VM-UNet/blob/main/pre_trained_weights/README.md")
 
     # Set the number of kernels and learning rate based on the tuning flag
     if args.tuning:
