@@ -148,14 +148,19 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
     net.init_weights()
     net.to(device)
 
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+    # Select the optimizer
+    if args.optimizer == "Adam":
+        optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+    elif args.optimizer == "AdamW":
+        optimizer = torch.optim.AdamW(net.parameters(), lr=lr, betas=(0.9, 0.999), weight_decay=weight_decay)
+    else:
+        raise ValueError(f"Unknown optimizer {args.optimizer}")
 
     # Set up the scheduler if tuning
     if args.tuning:
         scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
     else:
         scheduler = None
-
 
     # Dataset part
     B: int = datasets_params[args.dataset]['B']
@@ -534,6 +539,9 @@ def main():
                         help="If set, the program will include augmented data in training.")
     parser.add_argument('--tuning', action='store_true',
                         help="If set, the program will perform tuning. Can only be set when --model_name='ENet'.")
+    parser.add_argument('--optimizer', type=str, default='Adam',
+                        choices=['Adam', 'AdamW'],
+                        help="Name of the optimizer to use. Choices are 'Adam' or 'AdamW'.")
 
     args = parser.parse_args()
 
