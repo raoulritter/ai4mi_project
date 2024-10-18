@@ -54,16 +54,45 @@ from losses import (CrossEntropy)
 # Import our own models (placeholders now)
 import torch.nn as nn
 
-class SAM2(nn.Module):
-    def __init__(self, *args, **kwargs):
-        super(SAM2, self).__init__()
-        # Placeholder implementation
+# Add SAM2-specific imports
+from sam2.build_sam import build_sam2
+from sam2.sam2_image_predictor import SAM2ImagePredictor
 
-    def forward(self, x):
-        return x  # Placeholder
+class SAM2(nn.Module):
+    def __init__(self, checkpoint_path):
+        super(SAM2, self).__init__()
+        self.model = build_sam2(checkpoint_path)
+        self.image_encoder = self.model.image_encoder
+        self.prompt_encoder = self.model.prompt_encoder
+        self.mask_decoder = self.model.mask_decoder
+
+    def forward(self, image, points=None, labels=None):
+        # If points and labels are not provided, generate random ones
+        if points is None or labels is None:
+            batch_size, _, height, width = image.shape
+            points = torch.rand(batch_size, 3, 2, device=image.device)
+            points[:, :, 0] *= width
+            points[:, :, 1] *= height
+            labels = torch.ones(batch_size, 3, device=image.device).long()
+
+        image_embedding = self.image_encoder(image)
+        sparse_embeddings, dense_embeddings = self.prompt_encoder(
+            points=points,
+            boxes=None,
+            masks=None,
+        )
+        low_res_masks, iou_predictions = self.mask_decoder(
+            image_embeddings=image_embedding,
+            image_pe=self.prompt_encoder.get_dense_pe(),
+            sparse_prompt_embeddings=sparse_embeddings,
+            dense_prompt_embeddings=dense_embeddings,
+            multimask_output=False,
+        )
+        return low_res_masks
 
     def init_weights(self):
-        pass  # Placeholder
+        # Weights are already initialized in the build_sam2 function
+        pass
 
 class VMUNet(nn.Module):
     def __init__(self, *args, **kwargs):
@@ -147,8 +176,11 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
         weight_decay = 0.0
 
     # Initialize the network
-    # net = datasets_params[args.dataset]['net'](1, K, kernels=kernels)
-    net = model_class(1, K, kernels=kernels)
+    if args.model_name == 'SAM2':
+        checkpoint_path = '../checkpoints/sam2.1_hiera_large.pt'  # Adjust path as needed
+        net = SAM2(checkpoint_path)
+    else:
+        net = model_class(1, K, kernels=kernels)
     net.init_weights()
     net.to(device)
 
@@ -299,14 +331,15 @@ def runTraining(args, current_time, log_file):
                     assert 0 <= img.min() and img.max() <= 1
                     B, _, W, H = img.shape
 
-                    pred_logits = net(img)
-                    pred_probs = F.softmax(1 * pred_logits, dim=1)  # 1 is the temperature parameter
+                    if args.model_name == 'SAM2':
+                        # Forward pass for SAM2 (points and labels will be generated inside if not provided)
+                        masks = net(img)
+                        loss = loss_fn(masks, gt)
+                    else:
+                        # Existing forward pass for other models
+                        pred_logits: Tensor = net(img)
+                        loss = loss_fn(pred_logits, gt)
 
-                    # Metrics computation, not used for training
-                    pred_seg = probs2one_hot(pred_probs)
-                    log_dice[e, j:j + B, :] = dice_coef(gt, pred_seg)  # One DSC value per sample and per class
-
-                    loss = loss_fn(pred_probs, gt)
                     log_loss[e, i] = loss.item()  # One loss value per batch (averaged in the loss)
 
                     if opt:  # Only for training
