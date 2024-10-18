@@ -153,7 +153,7 @@ class PatchEmbed2D(nn.Module):
         embed_dim (int): Number of linear projection output channels. Default: 96.
         norm_layer (nn.Module, optional): Normalization layer. Default: None
 
-    Note: this code has been changed to work with SegTHOR
+    Note: this code has been altered to work with SegTHOR
     """
     def __init__(self, patch_size=4, in_chans=3, embed_dim=96, norm_layer=None, **kwargs):
         super().__init__()
@@ -169,8 +169,6 @@ class PatchEmbed2D(nn.Module):
         """
         Note, to make vmamnba compatible with the data we:
         1. Convert images to gray-scale
-        2. Reshape tensor to [batchsize, 96]
-        
         """
 
         # Convert RGB to grayscale
