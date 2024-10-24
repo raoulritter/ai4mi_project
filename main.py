@@ -53,21 +53,84 @@ from losses import (CrossEntropy)
 
 # Import our own models (placeholders now)
 import torch.nn as nn
+import os
+import sys
+from pathlib import Path
 
-# Add SAM2-specific imports
-from sam2.build_sam import build_sam2
-from sam2.sam2_image_predictor import SAM2ImagePredictor
+# Get the absolute path to the SAM2 modules
+BASE_DIR = Path('/home/scur2508/ai4mi_project')  # Updated path
+SAM2_MODULE_DIR = BASE_DIR / 'sam2' / 'sam2'     # Updated path
+
+# Add both potential module locations to Python path
+sys.path.insert(0, str(SAM2_MODULE_DIR))
+sys.path.insert(0, str(BASE_DIR / 'sam2'))
+
+def verify_sam2_installation():
+    
+    if not SAM2_MODULE_DIR.exists():
+        raise RuntimeError(f"SAM2 module directory not found at {SAM2_MODULE_DIR}")
+# Verify installation before importing
+verify_sam2_installation()
+
+# Now try to import SAM2 modules
+try:
+    from sam2.build_sam import build_sam2
+    from sam2.sam2_image_predictor import SAM2ImagePredictor
+    print("Successfully imported SAM2 modules")
+except ImportError as e:
+    print(f"Error importing SAM2 modules: {e}")
+    print("\nDebug information:")
+    print(f"Python version: {sys.version}")
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Python path: {sys.path}")
+    raise
+
+# If we get here, imports were successful
+print("SAM2 import setup completed successfully")
 
 class SAM2(nn.Module):
-    def __init__(self, checkpoint_path):
+    def __init__(self, checkpoint_path=None):
         super(SAM2, self).__init__()
-        self.model = build_sam2(checkpoint_path)
-        self.image_encoder = self.model.image_encoder
-        self.prompt_encoder = self.model.prompt_encoder
-        self.mask_decoder = self.model.mask_decoder
+        
+        try:
+            # Get relative path from sam2 package root
+            model_cfg = 'configs/sam2.1/sam2.1_hiera_l.yaml'
+            
+            print(f"Building SAM2 model with config {model_cfg}")
+            self.model = build_sam2(model_cfg)
+            
+            # Load checkpoint if provided
+            if checkpoint_path is not None and checkpoint_path.exists():
+                print(f"Loading checkpoint from {checkpoint_path}")
+                checkpoint = torch.load(checkpoint_path, map_location='cpu')
+                self.model.load_state_dict(checkpoint['model'])
+            else:
+                print("No checkpoint provided or checkpoint not found. Using initialized weights.")
+            
+            # Update attribute names to match SAM2Base interface
+            import pdb; pdb.set_trace()
+              # Map components using correct names
+            self.image_encoder = self.model.image_encoder  # This one stays the same
+            self.prompt_encoder = self.model.sam_prompt_encoder
+            self.mask_decoder = self.model.sam_mask_decoder
+            
+            # Store additional components that might be needed
+            self.memory_attention = self.model.memory_attention
+            self.memory_encoder = self.model.memory_encoder
+            self.obj_ptr_proj = self.model.obj_ptr_proj
+            
+            print("Successfully initialized SAM2 model")
+            
+        except Exception as e:
+            print(f"Error initializing SAM2 model: {e}")
+            print("\nDebug information:")
+            print(f"Config file: {model_cfg}")
+            print(f"Current working directory: {os.getcwd()}")
+            print(f"Python path: {sys.path}")
+            raise
 
     def forward(self, image, points=None, labels=None):
-        # If points and labels are not provided, generate random ones
+        # Generate random points and labels if not provided
         if points is None or labels is None:
             batch_size, _, height, width = image.shape
             points = torch.rand(batch_size, 3, 2, device=image.device)
@@ -75,12 +138,17 @@ class SAM2(nn.Module):
             points[:, :, 1] *= height
             labels = torch.ones(batch_size, 3, device=image.device).long()
 
+        # Get image embeddings
         image_embedding = self.image_encoder(image)
+        
+        # Get prompt embeddings
         sparse_embeddings, dense_embeddings = self.prompt_encoder(
             points=points,
             boxes=None,
             masks=None,
         )
+
+        # Decode masks
         low_res_masks, iou_predictions = self.mask_decoder(
             image_embeddings=image_embedding,
             image_pe=self.prompt_encoder.get_dense_pe(),
@@ -88,10 +156,11 @@ class SAM2(nn.Module):
             dense_prompt_embeddings=dense_embeddings,
             multimask_output=False,
         )
+        
         return low_res_masks
 
     def init_weights(self):
-        # Weights are already initialized in the build_sam2 function
+        # Weights are initialized in build_sam2
         pass
 
 class VMUNet(nn.Module):
@@ -177,8 +246,16 @@ def setup(args) -> tuple[nn.Module, Any, Any, DataLoader, DataLoader, int, Any]:
 
     # Initialize the network
     if args.model_name == 'SAM2':
-        checkpoint_path = '../checkpoints/sam2.1_hiera_large.pt'  # Adjust path as needed
-        net = SAM2(checkpoint_path)
+        checkpoint_path = BASE_DIR / 'sam2' / 'checkpoints' / 'sam2.1_hiera_large.pt'
+        if not checkpoint_path.exists():
+            print(f"Warning: Checkpoint not found at {checkpoint_path}")
+            checkpoint_path = None
+        try:
+            net = SAM2(checkpoint_path)
+            print("Successfully created SAM2 model")
+        except Exception as e:
+            print(f"Failed to create SAM2 model: {e}")
+            raise
     else:
         net = model_class(1, K, kernels=kernels)
     net.init_weights()
@@ -655,3 +732,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
